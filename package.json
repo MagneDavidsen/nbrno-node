@@ -1,0 +1,15 @@
+{
+  "name": "nbrno-node",
+  "scripts": {
+    "start": "server.js"
+  },
+  "version": "0.0.1",
+  "engines": {
+    "node": "0.10.x"
+  },
+  "dependencies": {
+    "restify": "2.0.x",
+    "mongoose": "3.8.x",
+    "connect": "2.13.x"
+  }
+}
