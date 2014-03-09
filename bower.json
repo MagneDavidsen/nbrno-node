@@ -1,0 +1,25 @@
+{
+  "name": "nbrno-node",
+  "version": "0.1.0",
+  "devDependencies": {
+        "jquery": "latest",
+        "react": "latest",
+        "when": "latest",
+        "rest": "latest",
+        "requirejs": "latest" 
+    },
+  "main": "public/index.html",
+  "homepage": "https://github.com/MagneDavidsen/nbrno-node",
+  "authors": [
+    "Magne Davidsen <magne.davidsen@gmail.com>"
+  ],
+  "license": "MIT",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}
