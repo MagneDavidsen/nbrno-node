@@ -11,14 +11,14 @@ function getAllRappers(req, res, next) {
 	return next();
 }
 
-function createRapper(req, res, next) {
-	var rapper = new db.Rapper(req.body)
+function createRapper(rapperName, imageName, imageData) {
+	var rapper = new db.Rapper
+	rapper.name = rapperName
+	rapper.picture.fileName = imageName
+	rapper.picture.data = imageData.toString('base64')
 	rapper.save(function (err, rapper) {
-  		if (err) return console.error(err);
+			if (err) return console.error(err);
 	});
-
-	res.send(200);
-	return next();
 }
 
 function getRapper(req, res, next) {
@@ -33,7 +33,7 @@ function getTwoRandomRappers(req, res, next) {
   		console.log("Two random rappers: " + twoRandomRappers);
   		res.send(200, twoRandomRappers);
 	})
-	
+
 	return next();
 }
 
@@ -49,6 +49,10 @@ function vote(req, res, next) {
 
 	res.send(200);
 	return next();
+}
+
+function getImg(rappername) {
+	db.Rapper.findOne()
 }
 
 module.exports = {

@@ -9,11 +9,7 @@
   },
   "dependencies": {
     "restify": "2.0.x",
-    "mongoose": "3.8.x",
-    "connect": "2.13.x",
-    "when": "2.8.x",
-    "rest": "1.0.x",
-    "react": "0.9.x"
+    "mongoose": "3.8.x"
   },
   "devDependencies": {
     "gulp-bower": "0.0.3",

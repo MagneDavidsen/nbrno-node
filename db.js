@@ -20,12 +20,13 @@ mongoose.connection.on('disconnected', function () {
 var voteSchema = new Schema({
 	ip: { type: String },
   	timestamp: {  type: Date, default: Date.now },
-  	win: { type: Boolean}
+  	win: { type: Boolean }
 })
 
 var rapperSchema = new Schema({
   name: { type: String },
-  picture: {  data: Buffer, contentType: String, default: '' },
+  picture: { data: String, contentType: String, fileName: String },
+  timestamp: {  type: Date, default: Date.now },
   facebook: { type: String, default: '' },
   twitter: { type: String, default: '' },
   soundcloud: { type: String, default: '' },

@@ -10,7 +10,7 @@ require.config({
 require(["rest/rest","rest/interceptor/mime", "react/react"], function(rest,mime,React) {
 	rest('http://localhost:8080/api/Rappers/tworandom').then(function(response) {
 		console.log('response: ', response);
-		
+
 		React.renderComponent(
 			<CommentBox data={JSON.parse(response.entity)}/>,
 			document.getElementById('content'));
@@ -22,12 +22,15 @@ require(["rest/rest","rest/interceptor/mime", "react/react"], function(rest,mime
 				<div className="comment">
 				<h2 className="commentAuthor">
 				{this.props.author}
+				<img src={"data:image/jpg;base64," + this.props.picture.data} />
 				</h2>
 				{this.props.children}
 				</div>
 				);
 		}
 	});
+
+
 
 	var CommentList = React.createClass({
 		render: function() {
@@ -36,7 +39,7 @@ require(["rest/rest","rest/interceptor/mime", "react/react"], function(rest,mime
 
 			var commentNodes = this.props.data.map(function (rapper) {
 
-			 	return <Comment author={rapper.name}>HEY</Comment>;
+			 	return <Comment picture={rapper.picture} author={rapper.name}>HEY</Comment>;
 			 });
 			return (
 				<div className="commentList">
@@ -70,6 +73,6 @@ require(["rest/rest","rest/interceptor/mime", "react/react"], function(rest,mime
 
 
 
-	
+
 
 });
