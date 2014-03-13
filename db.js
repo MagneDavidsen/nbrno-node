@@ -26,13 +26,6 @@ var voteSchema = new Schema({
 var rapperSchema = new Schema({
   name: { type: String },
   picture: { data: String, contentType: String, fileName: String },
-  timestamp: {  type: Date, default: Date.now },
-  facebook: { type: String, default: '' },
-  twitter: { type: String, default: '' },
-  soundcloud: { type: String, default: '' },
-  spotify: { type: String, default: '' },
-  wimp: { type: String, default: '' },
-  instagram: { type: String, default: '' },
   votes: [voteSchema]
 })
 

@@ -1,0 +1,120 @@
+@site-width: 800px;
+@background: #DDD;
+@second-background: #eee;
+@form-color: #EEE;
+@firm: blue;
+@gray: #ddd;
+@inverse: #333;
+
+@rapper-background: #007F91;
+@position-background: #00535E;
+
+@vote-button: #5ABAC8;
+@vote-button-hover: #5ec3d2;
+@voteup-background: #037621;
+@voteup-background-hover: #37A654;
+@votedown-background: #9E1604;
+@votedown-background-hover: #C04E40;
+
+@media all and (min-width: 1000px) {
+	div.vs {
+		top: 2em;
+		font-size: 700%;
+	}
+}
+
+@media all and (max-width: 1000px) and (min-width: 700px) {
+	div.vs {
+		top: 3em;
+		font-size: 500%;
+	}
+}
+
+@media all and (max-width: 700px) {
+	div.vs {
+		top: 5em;
+		font-size: 300%;
+	}
+}
+
+body {
+  font-family: 'pt sans';
+  font-size: 15pt;
+  color: @inverse;
+  margin: 0;
+  background: @second-background;
+  text-align: center;
+}
+
+div {
+	overflow: hidden;
+}
+
+
+.container {
+	margin:0 auto;
+	padding: 0;
+	left: 50%;
+	background: @second-background;
+	width: 1000px;
+	max-width: 90%;
+	text-align: center;
+}
+
+div.vs {
+	font-weight: bold;
+	z-index: 3;
+	width: 100%;
+	text-align: center;
+	margin-left: -50%;
+	left: 50%;
+	position: absolute;
+}
+
+div.voteBox {
+	
+	> .rapperBox {
+		background: @gray;
+		margin: 1%;
+		padding: 5%;
+
+		> img {
+			width: 100%;
+		}
+
+		> .rapperName {
+			font-size: 250%;
+			margin: 10% 0 0 0;
+		}
+	}
+
+	> :first-child {
+		float: left;
+		width: 36%;
+	}
+	> :last-child {
+		float: right;
+		width: 36%;
+	}
+}
+
+div.rapperLists {
+	margin: 10% 1%;
+	> div {
+		margin-right: 2%;
+		width: 32%;
+		float: left;
+	}
+
+	> :last-child {
+		margin-right: 0;
+	}
+}
+
+div.listItem {
+	margin-top: 2%;
+	
+	background: @gray;
+	font-size: 150%;
+
+}

@@ -33,18 +33,20 @@ server.get('/admin/createRapper', function (req, res){
 /// Post files
 server.post('/admin/createRapper', function(req, res) {
   console.log(req)
+
   var imageData = fs.readFileSync(req.files.image.path)
   var imageName = req.files.image.name
+  var imageType = req.files.image.type
   var rapperName = req.body.rapperName
-  controller.createRapper(rapperName, imageName, imageData)
+
+  controller.createRapper(rapperName, imageName, imageData, imageType)
 
   res.send(200);
   return next();
 });
 
 server.get(/.*/, restify.serveStatic({
-  directory: 'public',
-  default: 'index.html'
+  directory: 'dist'
 }));
 
 server.listen(8080, function() {
