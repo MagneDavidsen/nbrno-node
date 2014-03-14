@@ -40,13 +40,14 @@ function getTwoRandomRappers(req, res, next) {
 
 function vote(req, res, next) {
 	console.log(req.body);
+	var voteElement = JSON.parse(req.body)
+	console.log(voteElement.id)
 
-	req.body.forEach(function(voteElement) {
 		db.Rapper.update({_id: voteElement.id },
 			{$push: { votes : voteElement.vote }}, {upsert:true}, function(err, data) {
 				if (err) return console.error(err);
 			});
-	});
+
 
 	res.send(200);
 	return next();

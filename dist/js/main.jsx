@@ -3,8 +3,7 @@
 require.config({
 	baseUrl: "/js/lib",
 	paths: {
-		"when": "when/when",
-		"yo": "when/when"
+		"when": "when/when"
 	}
 });
 
@@ -58,10 +57,17 @@ require(["rest/rest","rest/interceptor/mime", "react/react"], function(rest,mime
 	});
 
 	var RapperBox = React.createClass({
+		handleClick: function(event) {
+			var rapperId = this.props.rapperId
+    		rest({ method: 'POST', path: "/api/Vote" , entity: JSON.stringify({win:true, id:rapperId})}).then(function (reponse) {
+				console.log(response);
+			});
+  		},
+
 		render: function() {
 			return (
-				<div className="rapperBox">
-				<img src={"data:" +this.props.picture.contentType + ";base64," + this.props.picture.data} />
+				<div className="rapperBox" onClick={this.handleClick}>
+				<img src={"data:" +this.props.picture.contentType + ";base64," + this.props.picture.data}  />
 				<div className="rapperName">{this.props.rapperName}</div>
 
 				</div>
@@ -73,7 +79,7 @@ require(["rest/rest","rest/interceptor/mime", "react/react"], function(rest,mime
 	var RappersView = React.createClass({
 		render: function() {
 			var rappers = this.props.data.map(function (rapper) {
-				return <RapperBox picture={rapper.picture} rapperName={rapper.name}></RapperBox>;
+				return <RapperBox picture={rapper.picture} rapperName={rapper.name} rapperId={rapper._id}></RapperBox>;
 			});
 			return (
 				<div className="voteBox">

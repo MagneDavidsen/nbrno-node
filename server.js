@@ -41,7 +41,7 @@ server.post('/admin/createRapper', function(req, res) {
 
   controller.createRapper(rapperName, imageName, imageData, imageType)
 
-  res.send(200);
+  res.send({redirect: '/admin/createRapper'});
   return next();
 });
 
