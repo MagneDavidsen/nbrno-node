@@ -8,11 +8,22 @@ require.config({
 });
 
 require(["rest/rest","rest/interceptor/mime", "react/react"], function(rest,mime,React) {
-	rest('http://localhost:8080/api/Rappers').then(function(response) {
+	
+	function resetListView() {
+		rest('http://localhost:8080/api/Rappers').then(function(response) {
+			React.renderComponent(
+				<RapperListModule data={JSON.parse(response.entity)}/>,
+				document.getElementById('listView'));
+		});
+	}
+
+	function resetVoteView() {
+		rest('http://localhost:8080/api/Rappers/tworandom').then(function(response) {
 		React.renderComponent(
-			<RapperListModule data={JSON.parse(response.entity)}/>,
-			document.getElementById('listView'));
-	});
+			<VoteView data={JSON.parse(response.entity)}/>,
+			document.getElementById('voteView'));
+		});
+	}
 
 	var RapperListModule = React.createClass({
 		render: function() {
@@ -49,41 +60,61 @@ require(["rest/rest","rest/interceptor/mime", "react/react"], function(rest,mime
 	});
 
 
-
-	rest('http://localhost:8080/api/Rappers/tworandom').then(function(response) {
-		React.renderComponent(
-			<VoteView data={JSON.parse(response.entity)}/>,
-			document.getElementById('voteView'));
-	});
+	
 
 	var RapperBox = React.createClass({
+		getInitialState: function() {
+   			return {voted: false};
+  		},
+
 		handleClick: function(event) {
-			var rapperId = this.props.rapperId
-    		rest({ method: 'POST', path: "/api/Vote" , entity: JSON.stringify({win:true, id:rapperId})}).then(function (reponse) {
-				console.log(response);
+			var rapperSide = this.props.side;
+			var rapperBox = this;
+
+    		rest({ method: 'POST', path: "/api/Vote" , entity: JSON.stringify({side:rapperSide})}).then(function(response) {
+    			var entity = JSON.parse(response.entity);
+    			var wins = entity.wins;
+    			var losses = entity.losses;
+				rapperBox.setState({voted:true, wins:wins, losses:losses});
+				setTimeout(function(){
+					resetVoteView();
+					rapperBox.setState({voted: false});},1500);
+
 			});
   		},
 
 		render: function() {
-			return (
-				<div className="rapperBox" onClick={this.handleClick}>
-				<img src={"data:" +this.props.picture.contentType + ";base64," + this.props.picture.data}  />
-				<div className="rapperName">{this.props.rapperName}</div>
+			console.log("rendering rapperbox");
 
+			var notVotedBox = (
+				<div className="rapperBox" onClick={this.handleClick}>
+					<img src={"data:" +this.props.picture.contentType + ";base64," + this.props.picture.data}  />
+					<div className="rapperName">{this.props.rapperName}</div>
 				</div>
 				);
+
+			var votedBox = (
+				<div className="rapperBox">
+					<div className="rapperName">{this.props.rapperName}</div>
+					<div>Wins: {this.state.wins}</div>
+					<div>Losses: {this.state.losses}</div>
+				</div>
+				);
+
+			return this.state.voted ? votedBox : notVotedBox;
 		}
 	});
 
 
 	var RappersView = React.createClass({
 		render: function() {
-			var rappers = this.props.data.map(function (rapper) {
-				return <RapperBox picture={rapper.picture} rapperName={rapper.name} rapperId={rapper._id}></RapperBox>;
-			});
+			var leftRapper = this.props.data.left;
+			var rightRapper = this.props.data.right;
+				
 			return (
 				<div className="voteBox">
-				{rappers}
+				<RapperBox picture={leftRapper.picture} rapperName={leftRapper.name} side="left"></RapperBox>
+				<RapperBox picture={rightRapper.picture} rapperName={rightRapper.name} side="right"></RapperBox>
 				</div>
 				);
 		}
@@ -100,4 +131,7 @@ require(["rest/rest","rest/interceptor/mime", "react/react"], function(rest,mime
 				);
 		}
 	});
+
+	resetVoteView();
+	resetListView();
 });
