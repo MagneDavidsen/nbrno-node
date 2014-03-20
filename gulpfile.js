@@ -3,6 +3,7 @@ var bower = require('gulp-bower');
 var react = require('gulp-react');
 var less = require('gulp-less');
 var path = require('path');
+var runSequence = require('run-sequence');
 
 gulp.task('bower', function() {
   bower()
