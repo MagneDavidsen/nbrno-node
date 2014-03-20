@@ -6,8 +6,9 @@ var path = require('path');
 var runSequence = require('run-sequence');
 
 gulp.task('bower', function() {
-  bower()
-    .pipe(gulp.dest('client/src/js/lib/'))
+  return bower()
+    .pipe(gulp.dest('client/src/js/lib/'));
+
 });
 
 gulp.task('react', function () {

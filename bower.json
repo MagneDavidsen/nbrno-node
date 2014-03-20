@@ -13,5 +13,11 @@
     "Magne Davidsen <magne.davidsen@gmail.com>"
   ],
   "license": "MIT",
-  "private": true
+  "private": true,
+  "ignore": [
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
 }
