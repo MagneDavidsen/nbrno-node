@@ -35,6 +35,6 @@ gulp.task('default', function(){
 
 gulp.task('heroku:production', function(){
 	runSequence(
-		'bower','react', 'copy-client', 'less']
+		'bower','react', 'copy-client', 'less'
 	);
 });
