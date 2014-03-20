@@ -6,7 +6,7 @@ var path = require('path');
 var runSequence = require('run-sequence');
 
 gulp.task('bower', function() {
-  bower()
+  bower('./node_modules')
     .pipe(gulp.dest('client/src/js/lib/'))
 });
 
@@ -35,8 +35,6 @@ gulp.task('default', function(){
 
 gulp.task('heroku:production', function(){
 	runSequence(
-		'bower',
-		['react', 'copy-client', 'less']
+		'bower','react', 'copy-client', 'less'
 	);
-
 });
