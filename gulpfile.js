@@ -6,7 +6,7 @@ var path = require('path');
 var runSequence = require('run-sequence');
 
 gulp.task('bower', function() {
-  bower('./node_modules')
+  bower()
     .pipe(gulp.dest('client/src/js/lib/'))
 });
 
@@ -21,11 +21,6 @@ gulp.task('copy-client', function () {
         .pipe(gulp.dest('dist/'));
 });
 
-gulp.task('copy-node', function () {
-    gulp.src('node_modules/**/*.js')
-        .pipe(gulp.dest('dist/js/lib'));
-});
-
 gulp.task('less', function () {
   gulp.src('client/src/**/*.less')
     .pipe(less({
@@ -38,4 +33,8 @@ gulp.task('default', function(){
   // place code for your default task here
 });
 
-gulp.task('heroku:production', ['react', 'copy-client', 'less', 'copy-node']);
+gulp.task('heroku:production', function(){
+	runSequence(
+		'bower','react', 'copy-client', 'less']
+	);
+});
