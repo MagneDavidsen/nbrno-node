@@ -7,7 +7,7 @@
         "rest": "latest",
         "requirejs": "latest" 
     },
-  "main": "public/index.html",
+  "main": "dist/index.html",
   "homepage": "https://github.com/MagneDavidsen/nbrno-node",
   "authors": [
     "Magne Davidsen <magne.davidsen@gmail.com>"

@@ -32,4 +32,4 @@ gulp.task('default', function(){
   // place code for your default task here
 });
 
-gulp.task('heroku:production', ['react', 'copy-client', 'less']);
+gulp.task('heroku:production', ['bower', 'react', 'copy-client', 'less']);
