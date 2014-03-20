@@ -14,6 +14,7 @@ require(["rest/rest","rest/interceptor/mime", "react/react"], function(rest,mime
 			React.renderComponent(
 				<RapperListModule data={JSON.parse(response.entity)}/>,
 				document.getElementById('listView'));
+	
 		});
 	}
 
@@ -47,7 +48,7 @@ require(["rest/rest","rest/interceptor/mime", "react/react"], function(rest,mime
 	var RapperList = React.createClass({
 		render: function() {
 			var rappers = this.props.data.map(function (rapper, i) {
-				return <div className="listItem">{i+1}. {rapper.name}</div>
+				return <div className="listItem">{i+1}. {rapper.name} ({rapper.score})</div>
 			});
 			return (
 				<div className="rapperList">
@@ -58,9 +59,6 @@ require(["rest/rest","rest/interceptor/mime", "react/react"], function(rest,mime
 				);
 		}
 	});
-
-
-	
 
 	var RapperBox = React.createClass({
 		getInitialState: function() {
@@ -77,8 +75,14 @@ require(["rest/rest","rest/interceptor/mime", "react/react"], function(rest,mime
     			var losses = entity.losses;
 				rapperBox.setState({voted:true, wins:wins, losses:losses});
 				setTimeout(function(){
-					resetVoteView();
-					rapperBox.setState({voted: false});},1500);
+					rapperBox.setState({voted: false});
+
+					
+				resetVoteView();
+				resetListView();
+					
+					} ,2000);
+
 
 			});
   		},
@@ -96,8 +100,8 @@ require(["rest/rest","rest/interceptor/mime", "react/react"], function(rest,mime
 			var votedBox = (
 				<div className="rapperBox">
 					<div className="rapperName">{this.props.rapperName}</div>
-					<div>Wins: {this.state.wins}</div>
-					<div>Losses: {this.state.losses}</div>
+					<div>Seire: {this.state.wins}</div>
+					<div>Tap: {this.state.losses}</div>
 				</div>
 				);
 

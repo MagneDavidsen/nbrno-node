@@ -21,8 +21,9 @@ server.use(
 );
 
 server.get('/api/Rappers', controller.getAllRappers);
+server.get('/api/Rappers/week', controller.getAllRappersWeek);
+server.get('/api/Rappers/month', controller.getAllRappersMonth);
 server.get('/api/Rappers/tworandom', controller.getTwoRandomRappers);
-server.get('/api/Rappers/:id', controller.getRapper);
 server.post('/api/Vote', controller.vote);
 
 server.get('/admin/createRapper', function (req, res){
