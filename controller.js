@@ -42,18 +42,6 @@ function getAllRappersWeek(req, res){
 //db.rappers.find({"wins" : {"$elemMatch" : { timestamp: {$gte: start}}}} , {name:1, wins:1} )
 //db.rappers.find({"losses" : {"$elemMatch" : { timestamp: {$gte: start}}}} , {name:1, losses:1} )
 
-
-function createRapper(rapperName, imageName, imageData, imageType) {
-	var rapper = new models.Rapper
-	rapper.name = rapperName
-	rapper.picture.fileName = imageName
-	rapper.picture.data = imageData.toString('base64')
-	rapper.picture.contentType = imageType
-	rapper.save(function (err, rapper) {
-		if (err) return console.error(err);
-	});
-}
-
 function getTwoRandomRappers(req, res) {
 	models.Rapper.find().select('name picture').exec(function (err, rappers) {
 		if (err) return console.error(err);
@@ -83,11 +71,15 @@ function registerVote(winningRapper, losingRapper) {
 
 function vote(req, res) {
 
-	var voteElement = JSON.parse(req.body);
+	console.log(req);
+
+	var voteElement = req.body;
 	var cookie = req.header('Cookie')
 	var rappersToVoteFor = sessionVoteMap[cookie]
 	var winner;
 	var loser;
+
+	console.log(voteElement);
 
 	switch(voteElement.side) {
 		case "left":
@@ -118,7 +110,6 @@ module.exports = {
 	getAllRappers: getAllRappers,
 	getAllRappersWeek: getAllRappersWeek,
 	getAllRappersMonth: getAllRappersMonth,
-	createRapper: createRapper,
 	getTwoRandomRappers: getTwoRandomRappers,
 	vote: vote
 };

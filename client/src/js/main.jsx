@@ -15,7 +15,6 @@ require(["rest/rest","rest/interceptor/mime", "react"], function(rest,mime,React
 			React.renderComponent(
 				<RapperListModule data={JSON.parse(response.entity)}/>,
 				document.getElementById('listView'));
-	
 		});
 	}
 
@@ -54,9 +53,8 @@ require(["rest/rest","rest/interceptor/mime", "react"], function(rest,mime,React
 			return (
 				<div className="rapperList">
 					<div className="header">{this.props.listName}</div>
-				{rappers}
+					{rappers}
 				</div>
-
 				);
 		}
 	});
@@ -70,22 +68,19 @@ require(["rest/rest","rest/interceptor/mime", "react"], function(rest,mime,React
 			var rapperSide = this.props.side;
 			var rapperBox = this;
 
-    		rest({ method: 'POST', path: "/api/Vote" , entity: JSON.stringify({side:rapperSide})}).then(function(response) {
-    			var entity = JSON.parse(response.entity);
-    			var wins = entity.wins;
-    			var losses = entity.losses;
-				rapperBox.setState({voted:true, wins:wins, losses:losses});
-				setTimeout(function(){
-					rapperBox.setState({voted: false});
+			client = rest.chain(mime, { mime: 'application/json' });
 
-					
-				resetVoteView();
-				resetListView();
-					
-					} ,2000);
-
-
-			});
+    		client({ method: 'POST', path: "/api/Vote", entity: {side:rapperSide} }).then(function(response) {
+    			console.log(response.entity);
+    			var wins = response.entity.wins;
+    			var losses = response.entity.losses;
+    			rapperBox.setState({voted:true, wins:wins, losses:losses});
+    			setTimeout(function(){
+    				resetVoteView();
+    				resetListView();
+    				rapperBox.setState({voted: false})
+    			} ,2000);
+    		});
   		},
 
 		render: function() {
