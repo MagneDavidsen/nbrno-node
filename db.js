@@ -1,8 +1,9 @@
 var mongoose = require('mongoose')
 
 var connect = function () {
+  var db_uri = process.env.MONGOLAB_URI || 'mongodb://localhost/test';
   var options = { server: { socketOptions: { keepAlive: 1 } } }
-  mongoose.connect('mongodb://localhost/test', options)
+  mongoose.connect(db_uri, options)
 }
 connect()
 
@@ -15,5 +16,3 @@ mongoose.connection.on('error', function (err) {
 mongoose.connection.on('disconnected', function () {
   connect()
 })
-
-

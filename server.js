@@ -2,8 +2,21 @@ var restify = require('restify');
 var fs = require('fs');
 var controller = require('./controller');
 
-var server = restify.createServer();
-server.use(restify.bodyParser({ mapParams: false }));
+var express = require('express');
+var path = require('path');
+var app = express();
+
+var port = process.env.PORT || 8080;
+var env = process.env.
+
+app.configure(function(){
+  app.use(express.favicon());
+  app.use(express.logger('dev'));
+  app.use(express.bodyParser());
+  app.use(express.methodOverride());
+  app.use(app.router);
+  app.use(express.static(path.join(__dirname, 'client/src')));
+});
 
 var form = "<!DOCTYPE HTML><html><body>" +
 "<form method='post' action='/admin/createRapper' enctype='multipart/form-data'>" +
@@ -12,27 +25,19 @@ var form = "<!DOCTYPE HTML><html><body>" +
 "<input type='submit' /></form>" +
 "</body></html>";
 
-server.use(
-  function crossOrigin(req,res,next){
-    res.header("Access-Control-Allow-Origin", "*");
-    res.header("Access-Control-Allow-Headers", "X-Requested-With");
-    return next();
-  }
-);
+app.get('/api/Rappers', controller.getAllRappers);
+app.get('/api/Rappers/week', controller.getAllRappersWeek);
+app.get('/api/Rappers/month', controller.getAllRappersMonth);
+app.get('/api/Rappers/tworandom', controller.getTwoRandomRappers);
+app.post('/api/Vote', controller.vote);
 
-server.get('/api/Rappers', controller.getAllRappers);
-server.get('/api/Rappers/week', controller.getAllRappersWeek);
-server.get('/api/Rappers/month', controller.getAllRappersMonth);
-server.get('/api/Rappers/tworandom', controller.getTwoRandomRappers);
-server.post('/api/Vote', controller.vote);
-
-server.get('/admin/createRapper', function (req, res){
+app.get('/admin/createRapper', function (req, res){
 	res.writeHead(200, {'Content-Type': 'text/html' });
 	res.end(form);
 });
 
 /// Post files
-server.post('/admin/createRapper', function(req, res) {
+app.post('/admin/createRapper', function(req, res) {
   console.log(req)
 
   var imageData = fs.readFileSync(req.files.image.path)
@@ -46,10 +51,6 @@ server.post('/admin/createRapper', function(req, res) {
   return next();
 });
 
-server.get(/.*/, restify.serveStatic({
-  directory: 'dist'
-}));
-
-server.listen(8080, function() {
-	console.log('%s listening at %s', server.name, server.url);
+var server = app.listen(port, function() {
+    console.log('Listening on port %d', server.address().port);
 });

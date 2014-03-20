@@ -5,7 +5,7 @@ var utils = require('./utils');
 //todo need to remove unused sessionsfrom this at some point
 var sessionVoteMap = {};
 
-function getAllRappers(req, res, next) {
+function getAllRappers(req, res) {
 	models.Rapper.find().select('name wins losses').exec(function (err, rappers) {
 		if (err) return console.error(err);
 		var rappersResponse = rappers.map(function(rapper){
@@ -15,15 +15,13 @@ function getAllRappers(req, res, next) {
 		rappersResponse.sort(function(a,b){return a.score - b.score}).reverse();
 		res.send(200, rappersResponse);
 	})
-
-	return next();
 }
 
-function getAllRappersMonth(req, res, next) {
+function getAllRappersMonth(req, res) {
 
+	var start = new Date()
 
-
-	models.Rapper.find({"wins" : {"$elemMatch" : { timestamp: {$gte: start, $lte: end}}}}, {name:1, wins:1, losses:1} ).(function (err, rappers) {
+	models.Rapper.find({"wins" : {"$elemMatch" : { timestamp: {$gte: start}}}}, {name:1, wins:1, losses:1} ), (function (err, rappers) {
 		if (err) return console.error(err);
 		var rappersResponse = rappers.map(function(rapper){
 			return {name:rapper.name, score: rapper.wins.length - rapper.losses.length}
@@ -32,13 +30,17 @@ function getAllRappersMonth(req, res, next) {
 		rappersResponse.sort(function(a,b){return a.score - b.score}).reverse();
 		res.send(200, rappersResponse);
 	})
-
-	return next();
 }
 
-db.rappers.aggregate(    {$match : {}},    {$unwind: "$wins"},    {$match: {"wins.timestamp": {$gte: start}}} );
+function getAllRappersWeek(req, res){
+	return "";
+}
+
+//db.rappers.aggregate(    {$match : {}},    {$unwind: "$wins"},    {$match: {"wins.timestamp": {$gte: start}}} );
 
 //db.rappers.find({"wins" : {"$elemMatch" : { timestamp: {$gte: start, $lte: end}}}}, {name:1, wins:1, losses:1} )
+//db.rappers.find({"wins" : {"$elemMatch" : { timestamp: {$gte: start}}}} , {name:1, wins:1} )
+//db.rappers.find({"losses" : {"$elemMatch" : { timestamp: {$gte: start}}}} , {name:1, losses:1} )
 
 
 function createRapper(rapperName, imageName, imageData, imageType) {
@@ -52,7 +54,7 @@ function createRapper(rapperName, imageName, imageData, imageType) {
 	});
 }
 
-function getTwoRandomRappers(req, res, next) {
+function getTwoRandomRappers(req, res) {
 	models.Rapper.find().select('name picture').exec(function (err, rappers) {
 		if (err) return console.error(err);
 		var twoRandomRappers = utils.getTwoRandomElementsFrom(rappers);
@@ -62,8 +64,6 @@ function getTwoRandomRappers(req, res, next) {
 
 		res.send(200, {left:twoRandomRappers[0], right:twoRandomRappers[1]});
 	})	
-
-	return next();
 }
 
 function registerVote(winningRapper, losingRapper) {
@@ -81,7 +81,7 @@ function registerVote(winningRapper, losingRapper) {
 		});
 }
 
-function vote(req, res, next) {
+function vote(req, res) {
 
 	var voteElement = JSON.parse(req.body);
 	var cookie = req.header('Cookie')
@@ -108,8 +108,6 @@ function vote(req, res, next) {
 		console.log(rapper);
 		res.send(200, {name:rapper.name, wins:rapper.wins.length, losses:rapper.losses.length});
 	});
-
-	return next();
 }
 
 function getImg(rappername) {

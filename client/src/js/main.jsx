@@ -1,16 +1,17 @@
 /** @jsx React.DOM */
 
 require.config({
-	baseUrl: "/js/lib",
-	paths: {
-		"when": "when/when"
-	}
+    baseUrl: "/js/lib",
+    paths: { 
+        'react': ['//cdnjs.cloudflare.com/ajax/libs/react/0.9.0/react.min', 'react/react'],
+        'when': ['//cdnjs.cloudflare.com/ajax/libs/when/2.7.1/when.min', 'when/when']
+    }
 });
 
-require(["rest/rest","rest/interceptor/mime", "react/react"], function(rest,mime,React) {
+require(["rest/rest","rest/interceptor/mime", "react"], function(rest,mime,React) {
 	
 	function resetListView() {
-		rest('http://localhost:8080/api/Rappers').then(function(response) {
+		rest('/api/Rappers').then(function(response) {
 			React.renderComponent(
 				<RapperListModule data={JSON.parse(response.entity)}/>,
 				document.getElementById('listView'));
@@ -19,7 +20,7 @@ require(["rest/rest","rest/interceptor/mime", "react/react"], function(rest,mime
 	}
 
 	function resetVoteView() {
-		rest('http://localhost:8080/api/Rappers/tworandom').then(function(response) {
+		rest('/api/Rappers/tworandom').then(function(response) {
 		React.renderComponent(
 			<VoteView data={JSON.parse(response.entity)}/>,
 			document.getElementById('voteView'));

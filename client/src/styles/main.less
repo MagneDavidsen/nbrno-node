@@ -64,6 +64,7 @@ div.vs {
 	margin-left: -50%;
 	left: 50%;
 	position: absolute;
+	z-index: 2;
 }
 
 div.voteBox {
@@ -123,4 +124,15 @@ div.listItem {
 	background: @background;
 	font-size: 150%;
 
+}
+
+.visible {
+  visibility: visible;
+  opacity: 1;
+  transition: opacity 0.5s linear;
+}
+.hidden {
+  visibility: hidden;
+  opacity: 0;
+  transition: visibility 0s 0.5s, opacity 0.5s linear;
 }
