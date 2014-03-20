@@ -1,4 +1,3 @@
-var restify = require('restify');
 var fs = require('fs');
 var controller = require('./controller');
 
