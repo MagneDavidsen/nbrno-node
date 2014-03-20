@@ -6,7 +6,9 @@ var path = require('path');
 var app = express();
 
 var port = process.env.PORT || 8080;
-var env = process.env.
+var env = process.env.NODE_ENV;
+
+var dist = env === 'production' ? 'dist' : 'client/src';
 
 app.configure(function(){
   app.use(express.favicon());
@@ -14,7 +16,7 @@ app.configure(function(){
   app.use(express.bodyParser());
   app.use(express.methodOverride());
   app.use(app.router);
-  app.use(express.static(path.join(__dirname, 'client/src')));
+  app.use(express.static(path.join(__dirname, dist)));
 });
 
 var form = "<!DOCTYPE HTML><html><body>" +
