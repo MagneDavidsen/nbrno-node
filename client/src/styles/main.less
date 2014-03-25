@@ -11,6 +11,18 @@
 @vote-background-left: #d07a78;
 @vote-background-right: #7b91d0;
 
+*, *:before, *:after {
+  -moz-box-sizing: border-box; -webkit-box-sizing: border-box; box-sizing: border-box;
+ }
+
+.reloading {
+  opacity: 0;
+}
+
+.hidden {
+	opacity: 0;
+}
+
 @media all and (min-width: 1000px) {
 	div.vs {
 		top: 2em;
@@ -43,6 +55,8 @@ body {
 
 div {
 	overflow: hidden;
+	margin: 0;
+	padding: 0;
 }
 
 
@@ -73,29 +87,41 @@ div.voteBox {
 		background: @background;
 		margin: 1%;
 		padding: 5%;
+		width: 47%;
+
+		-webkit-transition: opacity 1s ease-in-out;
+        -moz-transition: opacity 1s ease-in-out;
+        -o-transition: opacity 1s ease-in-out;
+    	transition: opacity 1s ease-in-out;
+
 
 		&:hover{
 			cursor: pointer;
 			background: @vote-background-left;
+			
+    	
 		}
 
-		> img {
+		img {
 			width: 100%;
+			max-width: 400px;
+			margin: 0;
+			padding: 0;
 		}
 
 		> .rapperName {
 			font-size: 250%;
-			margin: 10% 0 0 0;
+			margin: 10% 0 0 0; 
 		}
 	}
 
 	> :first-child {
 		float: left;
-		width: 36%;
+		
 	}
 	> :last-child {
 		float: right;
-		width: 36%;
+
 	}
 }
 
@@ -124,15 +150,4 @@ div.listItem {
 	background: @background;
 	font-size: 150%;
 
-}
-
-.visible {
-  visibility: visible;
-  opacity: 1;
-  transition: opacity 0.5s linear;
-}
-.hidden {
-  visibility: hidden;
-  opacity: 0;
-  transition: visibility 0s 0.5s, opacity 0.5s linear;
 }

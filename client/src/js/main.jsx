@@ -3,7 +3,7 @@
 require.config({
     baseUrl: "/js/lib",
     paths: { 
-        'react': ['//cdnjs.cloudflare.com/ajax/libs/react/0.9.0/react.min', 'react/react'],
+        'react': ['//cdnjs.cloudflare.com/ajax/libs/react/0.9.0/react-with-addons.min', 'react/react'],
         'when': ['//cdnjs.cloudflare.com/ajax/libs/when/2.7.1/when.min', 'when/when']
     }
 });
@@ -44,7 +44,6 @@ require(["rest/rest","rest/interceptor/mime", "react"], function(rest,mime,React
 		}
 	});
 
-
 	var RapperList = React.createClass({
 		render: function() {
 			var rappers = this.props.data.map(function (rapper, i) {
@@ -69,35 +68,44 @@ require(["rest/rest","rest/interceptor/mime", "react"], function(rest,mime,React
 			var rapperBox = this;
 
 			client = rest.chain(mime, { mime: 'application/json' });
-
-    		client({ method: 'POST', path: "/api/Vote", entity: {side:rapperSide} }).then(function(response) {
+			client({ method: 'POST', path: "/api/Vote", entity: {side:rapperSide} }).then(function(response) {
     			console.log(response.entity);
     			var wins = response.entity.wins;
     			var losses = response.entity.losses;
     			rapperBox.setState({voted:true, wins:wins, losses:losses});
+    			console.log("voted false")
+    			rapperBox.props.updateReloading(true);
+
     			setTimeout(function(){
-    				resetVoteView();
-    				resetListView();
+    				console.log("reset view")
+    				rapperBox.props.updateReloading(false);
     				rapperBox.setState({voted: false})
-    			} ,2000);
+	    				resetVoteView();
+	    				resetListView();
+    			} ,1000);
     		});
   		},
 
 		render: function() {
 			console.log("rendering rapperbox");
 
+			  var cx = React.addons.classSet;
+				var classes = cx({
+				    'rapperBox': true,
+				    'reloading': this.props.reloading
+				  });
+
 			var notVotedBox = (
-				<div className="rapperBox" onClick={this.handleClick}>
-					<img src={"data:" +this.props.picture.contentType + ";base64," + this.props.picture.data}  />
+				<div className={classes} onClick={this.handleClick} >
+					<img src={"data:" +this.props.picture.contentType + ";base64," + this.props.picture.data} />
 					<div className="rapperName">{this.props.rapperName}</div>
 				</div>
 				);
 
 			var votedBox = (
-				<div className="rapperBox">
-					<div className="rapperName">{this.props.rapperName}</div>
-					<div>Seire: {this.state.wins}</div>
-					<div>Tap: {this.state.losses}</div>
+				<div className={classes}>
+					<img src={"data:" +this.props.picture.contentType + ";base64," + this.props.picture.data} > </img>
+					<div className="rapperName">{this.props.rapperName}</div>					
 				</div>
 				);
 
@@ -107,14 +115,23 @@ require(["rest/rest","rest/interceptor/mime", "react"], function(rest,mime,React
 
 
 	var RappersView = React.createClass({
+		getInitialState: function() {
+   			return {reloading: false};
+  		},
+
+  		setReloading: function(value) {
+  			this.setState({reloading: value});
+  		},
+
 		render: function() {
 			var leftRapper = this.props.data.left;
 			var rightRapper = this.props.data.right;
 				
 			return (
 				<div className="voteBox">
-				<RapperBox picture={leftRapper.picture} rapperName={leftRapper.name} side="left"></RapperBox>
-				<RapperBox picture={rightRapper.picture} rapperName={rightRapper.name} side="right"></RapperBox>
+				<RapperBox updateReloading={this.setReloading} reloading={this.state.reloading} picture={leftRapper.picture} rapperName={leftRapper.name} side="left" />
+				<RapperBox updateReloading={this.setReloading} reloading={this.state.reloading} picture={rightRapper.picture} rapperName={rightRapper.name} side="right"  />
+
 				</div>
 				);
 		}
