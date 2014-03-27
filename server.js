@@ -1,5 +1,8 @@
+require('newrelic');
+
 var fs = require('fs');
 var controller = require('./controller');
+
 
 var express = require('express');
 var path = require('path');
