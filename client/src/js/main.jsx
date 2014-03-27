@@ -8,7 +8,7 @@ require.config({
     }
 });
 
-require(["rest/rest","rest/interceptor/mime", "react"], function(rest,mime,React) {
+require(["rest/rest","rest/interceptor/mime", "react", "when"], function(rest,mime,React, when) {
 	
 	function resetListView() {
 		rest('/api/Rappers').then(function(response) {
@@ -30,12 +30,14 @@ require(["rest/rest","rest/interceptor/mime", "react"], function(rest,mime,React
 		});
 	}
 
-	function resetVoteView() {
-		rest('/api/Rappers/tworandom').then(function(response) {
+	function getTwoRandomRappers(callback) {
+		rest('/api/Rappers/tworandom').then(callback);
+	}
+
+	function resetVoteView(response) {
 		React.renderComponent(
 			<VoteView data={JSON.parse(response.entity)}/>,
 			document.getElementById('voteView'));
-		});
 	}
 
 	var RapperListModule = React.createClass({
@@ -65,6 +67,8 @@ require(["rest/rest","rest/interceptor/mime", "react"], function(rest,mime,React
 	});
 
 	var RapperBox = React.createClass({
+
+
 		getInitialState: function() {
    			return {voted: false};
   		},
@@ -75,19 +79,24 @@ require(["rest/rest","rest/interceptor/mime", "react"], function(rest,mime,React
 
 			client = rest.chain(mime, { mime: 'application/json' });
 			client({ method: 'POST', path: "/api/Vote", entity: {side:rapperSide} }).then(function(response) {
-    			console.log(response.entity);
+				var twoRandomPromise = rest('/api/Rappers/tworandom');
+
     			var wins = response.entity.wins;
     			var losses = response.entity.losses;
     			rapperBox.setState({voted:true, wins:wins, losses:losses});
-    			console.log("voted false")
     			rapperBox.props.updateReloading(true);
 
+    			resetListView();
+
     			setTimeout(function(){
-    				console.log("reset view")
-    				rapperBox.props.updateReloading(false);
-    				rapperBox.setState({voted: false})
-	    				resetVoteView();
-	    				resetListView();
+    				console.log("hide view")
+    				twoRandomPromise.then(function(response){
+    					console.log("show view")
+    					rapperBox.props.updateReloading(false);
+    					rapperBox.setState({voted: false});
+    					resetVoteView(response);
+    					
+    				});
     			} ,1000);
     		});
   		},
@@ -159,6 +168,6 @@ require(["rest/rest","rest/interceptor/mime", "react"], function(rest,mime,React
 			<RapperListModule />,
 			document.getElementById('listView'));
 
-	resetVoteView();
+	getTwoRandomRappers(resetVoteView);
 	resetListView();
 });
