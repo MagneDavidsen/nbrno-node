@@ -77,6 +77,8 @@ require(["rest/rest","rest/interceptor/mime", "react", "when"], function(rest,mi
 			var rapperSide = this.props.side;
 			var rapperBox = this;
 
+			rapperBox.props.updateReloading(true);
+
 			client = rest.chain(mime, { mime: 'application/json' });
 			client({ method: 'POST', path: "/api/Vote", entity: {side:rapperSide} }).then(function(response) {
 				var twoRandomPromise = rest('/api/Rappers/tworandom');
@@ -84,7 +86,7 @@ require(["rest/rest","rest/interceptor/mime", "react", "when"], function(rest,mi
     			var wins = response.entity.wins;
     			var losses = response.entity.losses;
     			rapperBox.setState({voted:true, wins:wins, losses:losses});
-    			rapperBox.props.updateReloading(true);
+    			
 
     			resetListView();
 
