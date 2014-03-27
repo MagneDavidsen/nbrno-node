@@ -27,7 +27,7 @@ var form = "<!DOCTYPE HTML><html><body>" +
 
 app.get('/api/Rappers', controller.getAllRappers);
 app.get('/api/Rappers/week', controller.getAllRappersWeek);
-app.get('/api/Rappers/month', controller.getAllRappersMonth);
+app.get('/api/Rappers/month',  controller.getAllRappersMonth);
 app.get('/api/Rappers/tworandom', controller.getTwoRandomRappers);
 app.post('/api/Vote', controller.vote);
 

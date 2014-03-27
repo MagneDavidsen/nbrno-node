@@ -13,8 +13,20 @@ require(["rest/rest","rest/interceptor/mime", "react"], function(rest,mime,React
 	function resetListView() {
 		rest('/api/Rappers').then(function(response) {
 			React.renderComponent(
-				<RapperListModule data={JSON.parse(response.entity)}/>,
-				document.getElementById('listView'));
+				<RapperList data={JSON.parse(response.entity)} listName="Norges beste rapper"/>,
+				document.getElementById('allRappers'));
+		});
+
+		rest('/api/Rappers/week').then(function(response) {
+			React.renderComponent(
+				<RapperList data={JSON.parse(response.entity)} listName="Ukens beste rapper"/>,
+				document.getElementById('weekRappers'));
+		});
+
+		rest('/api/Rappers/month').then(function(response) {
+			React.renderComponent(
+				<RapperList data={JSON.parse(response.entity)} listName="Månedens beste rapper"/>,
+				document.getElementById('monthRappers'));
 		});
 	}
 
@@ -29,16 +41,10 @@ require(["rest/rest","rest/interceptor/mime", "react"], function(rest,mime,React
 	var RapperListModule = React.createClass({
 		render: function() {
 			return (
-				<div className="rapperLists">
-					<div className="rapperListModule">
-						<RapperList data={this.props.data} listName="Ukens beste rapper" />
-					</div>
-					<div className="rapperListModule">
-						<RapperList data={this.props.data} listName="Månedens beste rapper"/>
-					</div>
-					<div className="rapperListModule">
-						<RapperList data={this.props.data} listName="Norges beste rapper" />
-					</div>
+				<div className="rapperLists" >
+					<div className="rapperListModule" id="allRappers" />
+					<div className="rapperListModule" id="monthRappers" />
+					<div className="rapperListModule" id="weekRappers" />
 				</div>
 				);
 		}
@@ -148,6 +154,10 @@ require(["rest/rest","rest/interceptor/mime", "react"], function(rest,mime,React
 				);
 		}
 	});
+
+	React.renderComponent(
+			<RapperListModule />,
+			document.getElementById('listView'));
 
 	resetVoteView();
 	resetListView();

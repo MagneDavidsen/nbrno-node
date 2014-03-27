@@ -5,42 +5,70 @@ var utils = require('./utils');
 //todo need to remove unused sessionsfrom this at some point
 var sessionVoteMap = {};
 
-function getAllRappers(req, res) {
-	models.Rapper.find().select('name wins losses').exec(function (err, rappers) {
-		if (err) return console.error(err);
-		var rappersResponse = rappers.map(function(rapper){
-			return {name:rapper.name, score: rapper.wins.length - rapper.losses.length}
-		});
+function rappersAndVotesSince(date) {
+	console.log("Getting rappers since: " + date)
+	return models.Rapper.aggregate([
+	 	{$unwind: '$wins'},
+	 	{$match: {'wins.timestamp': {$gte: date}}},  
+	 	{$group: {'_id':'$_id', 'name': {$first:'$name'}, 'losses': {$first:'$losses'}, 'wins':{$sum:1}}},
+	 	{$unwind: '$losses'},
+	 	{$match: {'losses.timestamp': {$gte: date}}},  
+	 	{$group: {'_id':'$_id', 'name': {$first:'$name'}, 'losses': {$sum:1}, 'wins':{$first:'$wins'}}}
+	 	]);
+}
 
-		rappersResponse.sort(function(a,b){return a.score - b.score}).reverse();
+function setScoreAndSort(rappers) {
+	var rappersResponse = rappers.map(function(rapper){
+		return {name:rapper.name, score: rapper.wins - rapper.losses}
+	});
+
+	rappersResponse.sort(function(a,b){return a.score - b.score}).reverse();
+
+	return rappersResponse;
+}
+
+function getAllRappers(req, res) {
+	models.Rapper.aggregate([
+	 	{$unwind: '$wins'},
+	 	{$group: {'_id':'$_id', 'name': {$first:'$name'}, 'losses': {$first:'$losses'}, 'wins':{$sum:1}}},
+	 	{$unwind: '$losses'},
+	 	{$group: {'_id':'$_id', 'name': {$first:'$name'}, 'losses': {$sum:1}, 'wins':{$first:'$wins'}}}
+	 	]).exec(function(err, rappers) {
+		if (err) return console.error(err);
+		rappersResponse = setScoreAndSort(rappers);
 		res.send(200, rappersResponse);
-	})
+	});
 }
 
 function getAllRappersMonth(req, res) {
+	var date = new Date();
+	var firstDayOfTheMonth = new Date(date.getFullYear(), date.getMonth(), 1);
 
-	var start = new Date()
-
-	models.Rapper.find({"wins" : {"$elemMatch" : { timestamp: {$gte: start}}}}, {name:1, wins:1, losses:1} ), (function (err, rappers) {
+	rappersAndVotesSince(firstDayOfTheMonth).exec(function(err, rappers) {
 		if (err) return console.error(err);
-		var rappersResponse = rappers.map(function(rapper){
-			return {name:rapper.name, score: rapper.wins.length - rapper.losses.length}
-		});
-
-		rappersResponse.sort(function(a,b){return a.score - b.score}).reverse();
+		rappersResponse = setScoreAndSort(rappers);
 		res.send(200, rappersResponse);
-	})
+	});
 }
+
+
 
 function getAllRappersWeek(req, res){
-	return "";
+	function getMonday() {
+		var d = new Date();
+		var day = d.getDay();
+		var diff = d.getDate() - day + (day == 0 ? -6:1); // adjust when day is sunday
+		return new Date(d.setDate(diff));
+	}
+
+	var monday = getMonday();
+
+	rappersAndVotesSince(monday).exec(function(err, rappers) {
+		if (err) return console.error(err);
+		rappersResponse = setScoreAndSort(rappers);
+		res.send(200, rappersResponse);
+	});
 }
-
-//db.rappers.aggregate(    {$match : {}},    {$unwind: "$wins"},    {$match: {"wins.timestamp": {$gte: start}}} );
-
-//db.rappers.find({"wins" : {"$elemMatch" : { timestamp: {$gte: start, $lte: end}}}}, {name:1, wins:1, losses:1} )
-//db.rappers.find({"wins" : {"$elemMatch" : { timestamp: {$gte: start}}}} , {name:1, wins:1} )
-//db.rappers.find({"losses" : {"$elemMatch" : { timestamp: {$gte: start}}}} , {name:1, losses:1} )
 
 function getTwoRandomRappers(req, res) {
 	models.Rapper.find().select('name picture').exec(function (err, rappers) {
