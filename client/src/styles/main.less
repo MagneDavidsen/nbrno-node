@@ -8,8 +8,8 @@
 @rapper-background: #007F91;
 @position-background: #00535E;
 
-@vote-background-left: #d07a78;
-@vote-background-right: #7b91d0;
+@vote-background-left: #ba8c8d;
+@vote-background-right: #8d93b4;
 
 *, *:before, *:after {
   -moz-box-sizing: border-box; -webkit-box-sizing: border-box; box-sizing: border-box;
@@ -95,10 +95,7 @@ div.voteBox {
     	transition: opacity 0.5s ease-in-out;
 
 
-		&:hover{
-			cursor: pointer;
-			background: @vote-background-left;
-		}
+		
 
 		img {
 			width: 100%;
@@ -115,10 +112,20 @@ div.voteBox {
 
 	> :first-child {
 		float: left;
+
+		&:hover{
+			cursor: pointer;
+			background: @vote-background-left;
+		}
 		
 	}
 	> :last-child {
 		float: right;
+
+		&:hover{
+			cursor: pointer;
+			background: @vote-background-right;
+		}
 
 	}
 }

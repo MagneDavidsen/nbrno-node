@@ -6,7 +6,6 @@ var utils = require('./utils');
 var sessionVoteMap = {};
 
 function rappersAndVotesSince(date) {
-	console.log("Getting rappers since: " + date)
 	return models.Rapper.aggregate([
 	 	{$unwind: '$wins'},
 	 	{$match: {'wins.timestamp': {$gte: date}}},  
@@ -18,12 +17,13 @@ function rappersAndVotesSince(date) {
 }
 
 function setScoreAndSort(rappers) {
+	console.time("app.setScoreAndSort");
 	var rappersResponse = rappers.map(function(rapper){
 		return {name:rapper.name, score: rapper.wins - rapper.losses}
 	});
 
 	rappersResponse.sort(function(a,b){return a.score - b.score}).reverse();
-
+	console.timeEnd("app.setScoreAndSort");
 	return rappersResponse;
 }
 
@@ -44,14 +44,14 @@ function getAllRappersMonth(req, res) {
 	var date = new Date();
 	var firstDayOfTheMonth = new Date(date.getFullYear(), date.getMonth(), 1);
 
+	console.time("db.getMonthsRappers");
 	rappersAndVotesSince(firstDayOfTheMonth).exec(function(err, rappers) {
 		if (err) return console.error(err);
+		console.timeEnd("db.getMonthsRappers");
 		rappersResponse = setScoreAndSort(rappers);
 		res.send(200, rappersResponse);
 	});
 }
-
-
 
 function getAllRappersWeek(req, res){
 	function getMonday() {
@@ -63,51 +63,52 @@ function getAllRappersWeek(req, res){
 
 	var monday = getMonday();
 
+	console.time("db.getWeeksRappers");
 	rappersAndVotesSince(monday).exec(function(err, rappers) {
 		if (err) return console.error(err);
+		console.timeEnd("db.getWeeksRappers");
 		rappersResponse = setScoreAndSort(rappers);
 		res.send(200, rappersResponse);
 	});
 }
 
 function getTwoRandomRappers(req, res) {
+	console.time("db.getTwoRandomRappers");
 	models.Rapper.find().select('name picture').exec(function (err, rappers) {
 		if (err) return console.error(err);
+		console.timeEnd("db.getTwoRandomRappers");
 		var twoRandomRappers = utils.getTwoRandomElementsFrom(rappers);
 
 		var cookie = req.header('Cookie')
 		sessionVoteMap[cookie] = {left: twoRandomRappers[0], right: twoRandomRappers[1]};
 
-		res.send(200, {left:twoRandomRappers[0], right:twoRandomRappers[1]});
-	})	
+   		res.send(200, {left:twoRandomRappers[0], right:twoRandomRappers[1]});		
+	});	
 }
 
 function registerVote(winningRapper, losingRapper) {
-	console.log("winningRapper: " + winningRapper._id)
-	console.log("losingRapper: " + losingRapper._id)
-	
+	console.time("db.updateWinner");
 	models.Rapper.update({_id: winningRapper._id },
 		{$push: { wins : {vs: losingRapper._id} }}, {upsert:true}, function(err, data) {
 			if (err) return console.error(err);
+			console.timeEnd("db.updateWinner");
 		});
 
+console.time("db.updateLoser");
 	models.Rapper.update({_id: losingRapper._id },
 		{$push: { losses : {vs: winningRapper._id} }}, {upsert:true}, function(err, data) {
 			if (err) return console.error(err);
+			console.timeEnd("db.updateLoser");
 		});
 }
 
 function vote(req, res) {
-
-	console.log(req);
 
 	var voteElement = req.body;
 	var cookie = req.header('Cookie')
 	var rappersToVoteFor = sessionVoteMap[cookie]
 	var winner;
 	var loser;
-
-	console.log(voteElement);
 
 	switch(voteElement.side) {
 		case "left":
@@ -123,9 +124,10 @@ function vote(req, res) {
 	}
 	registerVote(winner, loser)
 
+	console.time("db.findWinner");
 	models.Rapper.findOne({_id: winner._id}).select('name -_id wins losses').exec(function (err, rapper) {
 		if (err) return console.error(err);
-		console.log(rapper);
+		console.timeEnd("db.findWinner");
 		res.send(200, {name:rapper.name, wins:rapper.wins.length, losses:rapper.losses.length});
 	});
 }
