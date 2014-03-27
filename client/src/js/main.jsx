@@ -97,7 +97,7 @@ require(["rest/rest","rest/interceptor/mime", "react", "when"], function(rest,mi
     					resetVoteView(response);
     					
     				});
-    			} ,1000);
+    			} ,500);
     		});
   		},
 
