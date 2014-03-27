@@ -86,9 +86,6 @@ require(["rest/rest","rest/interceptor/mime", "react", "when"], function(rest,mi
     			var wins = response.entity.wins;
     			var losses = response.entity.losses;
     			rapperBox.setState({voted:true, wins:wins, losses:losses});
-    			
-
-    			resetListView();
 
     			setTimeout(function(){
     				console.log("hide view")
@@ -97,7 +94,6 @@ require(["rest/rest","rest/interceptor/mime", "react", "when"], function(rest,mi
     					rapperBox.props.updateReloading(false);
     					rapperBox.setState({voted: false});
     					resetVoteView(response);
-    					
     				});
     			} ,500);
     		});
