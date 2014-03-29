@@ -1,9 +1,12 @@
 var db = require('./db');
 var models = require('./models');
 var utils = require('./utils');
+var NodeCache = require( "node-cache" );
 
-//todo need to remove unused sessionsfrom this at some point
-var sessionVoteMap = {};
+var fiveMinutes =  60 * 10;
+
+var sessionVoteMap = new NodeCache( { stdTTL: fiveMinutes , checkperiod: fiveMinutes } );
+var dbCache = new NodeCache( { stdTTL: fiveMinutes , checkperiod: fiveMinutes } );
 
 function rappersAndVotesSince(date) {
 	return models.Rapper.aggregate([
@@ -17,40 +20,76 @@ function rappersAndVotesSince(date) {
 }
 
 function setScoreAndSort(rappers) {
-	console.time("app.setScoreAndSort");
 	var rappersResponse = rappers.map(function(rapper){
 		return {name:rapper.name, score: rapper.wins - rapper.losses}
 	});
 
 	rappersResponse.sort(function(a,b){return a.score - b.score}).reverse();
-	console.timeEnd("app.setScoreAndSort");
 	return rappersResponse;
 }
 
+function returnRapperListResponse(res, rappers){
+	res.send(200, rappers.slice(0, 10));
+}
+
 function getAllRappers(req, res) {
-	models.Rapper.aggregate([
-	 	{$unwind: '$wins'},
-	 	{$group: {'_id':'$_id', 'name': {$first:'$name'}, 'losses': {$first:'$losses'}, 'wins':{$sum:1}}},
-	 	{$unwind: '$losses'},
-	 	{$group: {'_id':'$_id', 'name': {$first:'$name'}, 'losses': {$sum:1}, 'wins':{$first:'$wins'}}}
-	 	]).exec(function(err, rappers) {
-		if (err) return console.error(err);
-		rappersResponse = setScoreAndSort(rappers);
-		res.send(200, rappersResponse);
+	var allRappers;
+	dbCache.get("allRappers", function( err, value ){
+  		if (err) return console.error(err);
+    	allRappers = value["allRappers"];
 	});
+
+	if(allRappers){
+		returnRapperListResponse(res, allRappers);
+	} else {
+		console.time("db.getAllRappers");
+		models.Rapper.aggregate([
+		 	{$unwind: '$wins'},
+		 	{$group: {'_id':'$_id', 'name': {$first:'$name'}, 'losses': {$first:'$losses'}, 'wins':{$sum:1}}},
+		 	{$unwind: '$losses'},
+		 	{$group: {'_id':'$_id', 'name': {$first:'$name'}, 'losses': {$sum:1}, 'wins':{$first:'$wins'}}}
+		 	]).exec(function(err, rappers) {
+			if (err) return console.error(err);
+			console.timeEnd("db.getAllRappers");
+			rappersResponse = setScoreAndSort(rappers);
+
+			dbCache.set("allRappers", rappersResponse, function(err, success ){
+				if (err) return console.error(err);
+			});
+
+			returnRapperListResponse(res, rappersResponse);
+		});
+	}
 }
 
 function getAllRappersMonth(req, res) {
 	var date = new Date();
 	var firstDayOfTheMonth = new Date(date.getFullYear(), date.getMonth(), 1);
+	
+	var monthRappers;
 
-	console.time("db.getMonthsRappers");
-	rappersAndVotesSince(firstDayOfTheMonth).exec(function(err, rappers) {
-		if (err) return console.error(err);
-		console.timeEnd("db.getMonthsRappers");
-		rappersResponse = setScoreAndSort(rappers);
-		res.send(200, rappersResponse);
+	dbCache.get("monthRappers", function( err, value ){
+  		if (err) return console.error(err);
+    	monthRappers = value["monthRappers"];
 	});
+
+	if(monthRappers){
+		returnRapperListResponse(res, monthRappers);
+	} else{
+
+		console.time("db.getMonthRappers");
+		rappersAndVotesSince(firstDayOfTheMonth).exec(function(err, rappers) {
+			if (err) return console.error(err);
+			console.timeEnd("db.getMonthRappers");
+			rappersResponse = setScoreAndSort(rappers);
+
+			dbCache.set("monthRappers", rappersResponse, function(err, success ){
+				if (err) return console.error(err);
+			});
+
+			returnRapperListResponse(res, rappersResponse);	
+		});
+	}
 }
 
 function getAllRappersWeek(req, res){
@@ -61,29 +100,70 @@ function getAllRappersWeek(req, res){
 		return new Date(d.setDate(diff));
 	}
 
-	var monday = getMonday();
+	var weekRappers;
 
-	console.time("db.getWeeksRappers");
-	rappersAndVotesSince(monday).exec(function(err, rappers) {
-		if (err) return console.error(err);
-		console.timeEnd("db.getWeeksRappers");
-		rappersResponse = setScoreAndSort(rappers);
-		res.send(200, rappersResponse);
+	dbCache.get("weekRappers", function( err, value ){
+  		if (err) return console.error(err);
+    	weekRappers = value["weekRappers"];
 	});
+
+	if(weekRappers){
+		returnRapperListResponse(res, weekRappers);
+	} else{
+		var monday = getMonday();
+
+		console.time("db.getWeeksRappers");
+		rappersAndVotesSince(monday).exec(function(err, rappers) {
+			if (err) return console.error(err);
+			console.timeEnd("db.getWeeksRappers");
+			rappersResponse = setScoreAndSort(rappers);
+
+			dbCache.set("weekRappers", rappersResponse, function(err, success ){
+				if (err) return console.error(err);
+			});
+
+			returnRapperListResponse(res, rappersResponse);
+		});
+	}
 }
 
 function getTwoRandomRappers(req, res) {
-	console.time("db.getTwoRandomRappers");
-	models.Rapper.find().select('name picture').exec(function (err, rappers) {
-		if (err) return console.error(err);
-		console.timeEnd("db.getTwoRandomRappers");
+	
+	function getTwoRappersAndSendResponse(rappers) {
 		var twoRandomRappers = utils.getTwoRandomElementsFrom(rappers);
 
-		var cookie = req.header('Cookie')
-		sessionVoteMap[cookie] = {left: twoRandomRappers[0], right: twoRandomRappers[1]};
+		var cookie = req.header('Cookie');
+		var obj = {left: twoRandomRappers[0], right: twoRandomRappers[1]};
+
+		sessionVoteMap.set(cookie, obj, function( err, success ){
+			if (err) return console.error(err);
+		});
 
    		res.send(200, {left:twoRandomRappers[0], right:twoRandomRappers[1]});		
-	});	
+	}
+
+	var allRappers;
+
+	dbCache.get("allRappersForRandom", function( err, value ){
+  		if (err) return console.error(err);
+    	allRappers = value["allRappersForRandom"];
+	});
+
+	if(allRappers){
+		getTwoRappersAndSendResponse(allRappers);
+	} else {
+		console.time("db.getAllRappersForRandom");
+		models.Rapper.find().select('name picture').exec(function (err, rappers) {
+			if (err) return console.error(err);
+			console.timeEnd("db.getAllRappersForRandom");
+			
+			dbCache.set("allRappersForRandom", rappers, function(err, success ){
+				if (err) return console.error(err);
+			});
+
+			getTwoRappersAndSendResponse(rappers);
+		});
+	}	
 }
 
 function registerVote(winningRapper, losingRapper) {
@@ -106,7 +186,17 @@ function vote(req, res) {
 
 	var voteElement = req.body;
 	var cookie = req.header('Cookie')
-	var rappersToVoteFor = sessionVoteMap[cookie]
+
+	var rappersToVoteFor;
+
+	sessionVoteMap.get(cookie, function( err, value ){
+  		if (err) return console.error(err);
+    	console.log(value[cookie]);
+    	rappersToVoteFor = value[cookie];
+	});
+
+	console.log(rappersToVoteFor);
+
 	var winner;
 	var loser;
 

@@ -55,7 +55,7 @@ require(["rest/rest","rest/interceptor/mime", "react", "when"], function(rest,mi
 	var RapperList = React.createClass({
 		render: function() {
 			var rappers = this.props.data.map(function (rapper, i) {
-				return <div className="listItem">{i+1}. {rapper.name} ({rapper.score})</div>
+				return <div className="listItem">{i+1}. {rapper.name}</div>
 			});
 			return (
 				<div className="rapperList">
