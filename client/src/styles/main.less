@@ -49,7 +49,11 @@ body {
   font-size: 15pt;
   color: @inverse;
   margin: 0;
-  background: @body-background;
+  background: url('boxingring_bg.jpg') no-repeat center; 
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+  background-size: cover;
   text-align: center;
 }
 
@@ -59,12 +63,15 @@ div {
 	padding: 0;
 }
 
+h1 {
+  color: @background;
+}
+
 
 .container {
 	margin:0 auto;
 	padding: 0;
 	left: 50%;
-	background: @body-background;
 	width: 1000px;
 	max-width: 90%;
 	text-align: center;
@@ -131,7 +138,7 @@ div.voteBox {
 }
 
 div.rapperLists {
-	margin: 10% 1%;
+	margin: 5% 1%;
 
 	> div {
 		margin-right: 2%;

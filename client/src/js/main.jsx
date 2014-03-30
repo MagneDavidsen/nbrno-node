@@ -77,6 +77,7 @@ require(["rest/rest","rest/interceptor/mime", "react", "when"], function(rest,mi
 			var rapperSide = this.props.side;
 			var rapperBox = this;
 
+			ga('send', 'event', 'votebox', 'click', rapperSide);
 			rapperBox.props.updateReloading(true);
 
 			client = rest.chain(mime, { mime: 'application/json' });
