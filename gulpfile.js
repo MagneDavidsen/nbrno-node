@@ -18,7 +18,7 @@ gulp.task('react', function () {
 });
 
 gulp.task('copy-client', function () {
-    gulp.src(['client/src/**/index.html', 'client/src/**/*.js'])
+    gulp.src(['client/src/**/index.html', 'client/src/**/*.js', 'client/src/**/*.jpg'])
         .pipe(gulp.dest('dist/'));
 });
 
