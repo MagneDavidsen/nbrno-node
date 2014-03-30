@@ -138,14 +138,21 @@ require(["rest/rest","rest/interceptor/mime", "react", "when"], function(rest,mi
   		},
 
 		render: function() {
+			var cx = React.addons.classSet;
+				var classes = cx({
+				'vs': true,
+				'reloading': this.state.reloading
+			});
+
 			var leftRapper = this.props.data.left;
 			var rightRapper = this.props.data.right;
 				
 			return (
+				
 				<div className="voteBox">
-				<RapperBox updateReloading={this.setReloading} reloading={this.state.reloading} picture={leftRapper.picture} rapperName={leftRapper.name} side="left" />
-				<RapperBox updateReloading={this.setReloading} reloading={this.state.reloading} picture={rightRapper.picture} rapperName={rightRapper.name} side="right"  />
-
+					<RapperBox updateReloading={this.setReloading} reloading={this.state.reloading} picture={leftRapper.picture} rapperName={leftRapper.name} side="left" />
+					<div className={classes}>vs</div>
+					<RapperBox updateReloading={this.setReloading} reloading={this.state.reloading} picture={rightRapper.picture} rapperName={rightRapper.name} side="right"  />
 				</div>
 				);
 		}
@@ -156,7 +163,7 @@ require(["rest/rest","rest/interceptor/mime", "react", "when"], function(rest,mi
 			return (
 				<div className="voteView">
 				<h1>norgesbesterapper.no</h1>
-				<div className="vs">vs</div>
+				
 				<RappersView data={this.props.data} />
 				</div>
 				);

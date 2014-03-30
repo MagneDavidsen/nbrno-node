@@ -45,7 +45,7 @@
 }
 
 body {
-  font-family: 'pt sans';
+  font-family: 'montserrat', sans-serif;
   font-size: 15pt;
   color: @inverse;
   margin: 0;
@@ -61,12 +61,16 @@ div {
 	overflow: hidden;
 	margin: 0;
 	padding: 0;
+
+	-webkit-transition: opacity 0.5s ease-in-out;
+    -moz-transition: opacity 0.5s ease-in-out;
+    -o-transition: opacity 0.5s ease-in-out;
+    transition: opacity 0.5s ease-in-out;
 }
 
 h1 {
   color: @background;
 }
-
 
 .container {
 	margin:0 auto;
@@ -85,6 +89,8 @@ div.vs {
 	margin-left: -50%;
 	left: 50%;
 	position: absolute;
+	floating: none;
+	clear: none;
 	z-index: 2;
 }
 
@@ -94,15 +100,7 @@ div.voteBox {
 		background: @background;
 		margin: 1%;
 		padding: 5%;
-		width: 47%;
-
-		-webkit-transition: opacity 0.5s ease-in-out;
-        -moz-transition: opacity 0.5s ease-in-out;
-        -o-transition: opacity 0.5s ease-in-out;
-    	transition: opacity 0.5s ease-in-out;
-
-
-		
+		width: 47%;		
 
 		img {
 			width: 100%;
@@ -160,6 +158,5 @@ div.rapperLists {
 div.listItem {
 	margin-top: 2%;	
 	background: @background;
-	font-size: 150%;
 
 }
