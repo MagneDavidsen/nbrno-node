@@ -168,17 +168,17 @@ function getTwoRandomRappers(req, res) {
     }
 }
 
-function registerVote(winningRapper, losingRapper) {
+function registerVote(winningRapper, losingRapper, ipAddress) {
     console.time("db.updateWinner");
     models.Rapper.update({_id: winningRapper._id },
-        {$push: { wins: {vs: losingRapper._id} }}, {upsert: true}, function (err, data) {
+        {$push: { wins: {vs: losingRapper._id, ip: ipAddress} }}, {upsert: true}, function (err, data) {
             if (err) return console.error(err);
             console.timeEnd("db.updateWinner");
         });
 
     console.time("db.updateLoser");
     models.Rapper.update({_id: losingRapper._id },
-        {$push: { losses: {vs: winningRapper._id} }}, {upsert: true}, function (err, data) {
+        {$push: { losses: {vs: winningRapper._id, ip: ipAddress} }}, {upsert: true}, function (err, data) {
             if (err) return console.error(err);
             console.timeEnd("db.updateLoser");
         });
@@ -206,7 +206,7 @@ function vote(req, res) {
         default:
             console.error("Side is neither left or right: " + voteElement.side)
     }
-    registerVote(winner, loser)
+    registerVote(winner, loser, req.ip);
 
     console.time("db.findWinner");
     models.Rapper.findOne({_id: winner._id}).select('name -_id wins losses').exec(function (err, rapper) {
