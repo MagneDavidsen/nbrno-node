@@ -43,11 +43,20 @@ require(["rest/rest","rest/interceptor/mime", "react", "when"], function(rest,mi
 	var RapperListModule = React.createClass({
 		render: function() {
 			return (
-				<div className="rapperLists" >
-					<div className="rapperListModule" id="allRappers" />
-					<div className="rapperListModule" id="monthRappers" />
-					<div className="rapperListModule" id="weekRappers" />
-				</div>
+				<div>
+                    <div className="rapperLists" >
+                        <div className="rapperListModule" id="allRappers" />
+                        <div className="rapperListModule" id="monthRappers" />
+                        <div className="rapperListModule" id="weekRappers" />
+				    </div>
+                    <div className="rapperLists" >
+                        <div className="rapperListModule">
+                            <div className="header">Tips?</div>
+                            <a href="http://twitter.com/hiphopograp" target="_blank"><div className="listItem" >@hiphopograp</div></a>
+                        </div>
+                    </div>
+                </div>
+
 				);
 		}
 	});
@@ -67,8 +76,6 @@ require(["rest/rest","rest/interceptor/mime", "react", "when"], function(rest,mi
 	});
 
 	var RapperBox = React.createClass({
-
-
 		getInitialState: function() {
    			return {voted: false};
   		},
@@ -106,6 +113,7 @@ require(["rest/rest","rest/interceptor/mime", "react", "when"], function(rest,mi
 			  var cx = React.addons.classSet;
 				var classes = cx({
 				    'rapperBox': true,
+                    'no-touch': !Modernizr.touch,
 				    'reloading': this.props.reloading
 				  });
 
@@ -138,20 +146,12 @@ require(["rest/rest","rest/interceptor/mime", "react", "when"], function(rest,mi
   		},
 
 		render: function() {
-			var cx = React.addons.classSet;
-				var classes = cx({
-				'vs': true,
-				'reloading': this.state.reloading
-			});
-
 			var leftRapper = this.props.data.left;
 			var rightRapper = this.props.data.right;
 				
 			return (
-				
-				<div className="voteBox">
+    				<div className="voteBox">
 					<RapperBox updateReloading={this.setReloading} reloading={this.state.reloading} picture={leftRapper.picture} rapperName={leftRapper.name} side="left" />
-					<div className={classes}>vs</div>
 					<RapperBox updateReloading={this.setReloading} reloading={this.state.reloading} picture={rightRapper.picture} rapperName={rightRapper.name} side="right"  />
 				</div>
 				);

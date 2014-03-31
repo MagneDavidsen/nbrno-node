@@ -27,22 +27,22 @@
 
 @media all and (min-width: 1000px) {
   div.vs {
-    top: 2em;
-    font-size: 700%;
+    top: 1.4em;
+    font-size: 900%;
   }
 }
 
 @media all and (max-width: 1000px) and (min-width: 700px) {
   div.vs {
-    top: 3em;
-    font-size: 500%;
+    top: 1.6em;
+    font-size: 700%;
   }
 }
 
 @media all and (max-width: 700px) {
   div.vs {
-    top: 5em;
-    font-size: 300%;
+    top: 2.0em;
+    font-size: 500%;
   }
 }
 
@@ -74,6 +74,7 @@ h1 {
   color: @background;
 }
 
+
 .container {
   margin: 0 auto;
   padding: 0;
@@ -84,6 +85,9 @@ h1 {
 }
 
 div.vs {
+  color: @second-background;
+  -webkit-text-stroke-width: 0.2px;
+  -webkit-text-stroke-color: #666;
   font-weight: bold;
   pointer-events: none;
   width: 100%;
@@ -121,7 +125,7 @@ div.voteBox {
   > :first-child {
     float: left;
 
-    &:hover {
+    &.no-touch:hover {
       background: @vote-background-left;
     }
 
@@ -129,7 +133,7 @@ div.voteBox {
 
   > :last-child {
     float: right;
-    &:hover {
+    &.no-touch:hover {
       background: @vote-background-right;
     }
   }
@@ -155,14 +159,17 @@ div.rapperLists {
   }
 }
 
+.floatRight {
+  float:right;
+}
+
 div.listItem {
   margin-top: 2%;
   background: @background;
 
 }
 
-/** Touch device reset **/
-.touch div:hover {
-  background: none;
-  color: blue;
+a {
+  color: black;
+  text-decoration: none;
 }
