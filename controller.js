@@ -99,7 +99,9 @@ function getAllRappersWeek(req, res) {
         var d = new Date();
         var day = d.getDay();
         var diff = d.getDate() - day + (day == 0 ? -6 : 1); // adjust when day is sunday
-        return new Date(d.setDate(diff));
+        var monday = new Date(d.setDate(diff));
+        monday.setHours(0,0,0,0);
+        return monday;
     }
 
     var weekRappers;
