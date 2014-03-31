@@ -26,7 +26,9 @@ function setScoreAndSort(rappers) {
 
     rappersResponse.sort(function (a, b) {
         return a.score - b.score
-    }).reverse();
+    }).reverse().map(function (rapper){
+        return {name: rapper.name}
+    });
     return rappersResponse;
 }
 

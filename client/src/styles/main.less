@@ -12,36 +12,38 @@
 @vote-background-right: #8d93b4;
 
 *, *:before, *:after {
-  -moz-box-sizing: border-box; -webkit-box-sizing: border-box; box-sizing: border-box;
- }
+  -moz-box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box;
+}
 
 .reloading {
   opacity: 0;
 }
 
 .hidden {
-	opacity: 0;
+  opacity: 0;
 }
 
 @media all and (min-width: 1000px) {
-	div.vs {
-		top: 2em;
-		font-size: 700%;
-	}
+  div.vs {
+    top: 2em;
+    font-size: 700%;
+  }
 }
 
 @media all and (max-width: 1000px) and (min-width: 700px) {
-	div.vs {
-		top: 3em;
-		font-size: 500%;
-	}
+  div.vs {
+    top: 3em;
+    font-size: 500%;
+  }
 }
 
 @media all and (max-width: 700px) {
-	div.vs {
-		top: 5em;
-		font-size: 300%;
-	}
+  div.vs {
+    top: 5em;
+    font-size: 300%;
+  }
 }
 
 body {
@@ -49,7 +51,7 @@ body {
   font-size: 15pt;
   color: @inverse;
   margin: 0;
-  background: url('boxingring_bg.jpg') no-repeat center; 
+  background: url('boxingarena_bg.jpg') no-repeat center;
   -webkit-background-size: cover;
   -moz-background-size: cover;
   -o-background-size: cover;
@@ -58,14 +60,14 @@ body {
 }
 
 div {
-	overflow: hidden;
-	margin: 0;
-	padding: 0;
+  overflow: hidden;
+  margin: 0;
+  padding: 0;
 
-	-webkit-transition: opacity 0.5s ease-in-out;
-    -moz-transition: opacity 0.5s ease-in-out;
-    -o-transition: opacity 0.5s ease-in-out;
-    transition: opacity 0.5s ease-in-out;
+  -webkit-transition: opacity 0.5s ease-in-out;
+  -moz-transition: opacity 0.5s ease-in-out;
+  -o-transition: opacity 0.5s ease-in-out;
+  transition: opacity 0.5s ease-in-out;
 }
 
 h1 {
@@ -73,90 +75,88 @@ h1 {
 }
 
 .container {
-	margin:0 auto;
-	padding: 0;
-	left: 50%;
-	width: 1000px;
-	max-width: 90%;
-	text-align: center;
+  margin: 0 auto;
+  padding: 0;
+  left: 50%;
+  width: 1000px;
+  max-width: 90%;
+  text-align: center;
 }
 
 div.vs {
-	font-weight: bold;
-	pointer-events: none;
-	width: 100%;
-	text-align: center;
-	margin-left: -50%;
-	left: 50%;
-	position: absolute;
-	floating: none;
-	clear: none;
-	z-index: 2;
+  font-weight: bold;
+  pointer-events: none;
+  width: 100%;
+  text-align: center;
+  margin-left: -50%;
+  left: 50%;
+  position: absolute;
+  floating: none;
+  clear: none;
+  z-index: 2;
 }
 
 div.voteBox {
-	
-	> .rapperBox {
-		background: @background;
-		margin: 1%;
-		padding: 5%;
-		width: 47%;		
 
-		img {
-			width: 100%;
-			max-width: 400px;
-			margin: 0;
-			padding: 0;
-		}
+  > .rapperBox {
+    background: @background;
+    margin: 1%;
+    padding: 5%;
+    width: 47%;
+    cursor: pointer;
 
-		> .rapperName {
-			font-size: 250%;
-			margin: 10% 0 0 0; 
-		}
-	}
+    img {
+      width: 100%;
+      max-width: 400px;
+      margin: 0;
+      padding: 0;
+    }
 
-	> :first-child {
-		float: left;
+    > .rapperName {
+      font-size: 250%;
+      margin: 10% 0 0 0;
+    }
+  }
 
-		&:hover{
-			cursor: pointer;
-			background: @vote-background-left;
-		}
-		
-	}
-	> :last-child {
-		float: right;
+  > :first-child {
+    float: left;
 
-		&:hover{
-			cursor: pointer;
-			background: @vote-background-right;
-		}
+    &:hover {
+      background: @vote-background-left;
+    }
 
-	}
+  }
+
+  > :last-child {
+    float: right;
+    &:hover {
+      background: @vote-background-right;
+    }
+  }
 }
 
 div.rapperLists {
-	margin: 5% 1%;
+  margin: 5% 1%;
 
-	> div {
-		margin-right: 2%;
-		width: 32%;
-		float: left;
-		line-height: 200%;
+  > div {
+    margin-right: 2%;
+    width: 32%;
+    float: left;
+    line-height: 200%;
 
-		& .header{
-			font-weight: bold;
-			background: @second-background;
-		}
-	}
+    & .header {
+      font-weight: bold;
+      background: @second-background;
+    }
+  }
 
-	> :last-child {
-		margin-right: 0;
-	}
+  > :last-child {
+    margin-right: 0;
+  }
 }
 
 div.listItem {
-	margin-top: 2%;	
-	background: @background;
+  margin-top: 2%;
+  background: @background;
 
 }
