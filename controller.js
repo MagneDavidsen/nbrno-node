@@ -136,6 +136,7 @@ function getTwoRandomRappers(req, res) {
         var cookie = req.header('Cookie');
         sessionVoteMap[cookie] = {left: twoRandomRappers[0], right: twoRandomRappers[1]};
 
+        res.setHeader('Cache-Control', 'no-cache');
         res.send(200, {left: twoRandomRappers[0], right: twoRandomRappers[1]});
     }
 
