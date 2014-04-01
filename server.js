@@ -2,6 +2,7 @@ require('newrelic');
 
 var fs = require('fs');
 var controller = require('./controller');
+var htmlController = require('./htmlController');
 
 
 var express = require('express');
@@ -21,18 +22,13 @@ app.configure(function(){
   app.use(express.static(path.join(__dirname, dist)));
 });
 
-var form = "<!DOCTYPE HTML><html><body>" +
-"<form method='post' action='/admin/createRapper' enctype='multipart/form-data'>" +
-"<input type='text' name='rapperName'/>" +
-"<input type='file' name='image'/>" +
-"<input type='submit' /></form>" +
-"</body></html>";
-
 app.get('/api/Rappers', controller.getAllRappers);
 app.get('/api/Rappers/week', controller.getAllRappersWeek);
 app.get('/api/Rappers/month',  controller.getAllRappersMonth);
 app.get('/api/Rappers/tworandom', controller.getTwoRandomRappers);
 app.post('/api/Vote', controller.vote);
+
+app.get('/rappers', htmlController.getRappers);
 
 var server = app.listen(port, function() {
     console.log('Listening on port %d', server.address().port);
