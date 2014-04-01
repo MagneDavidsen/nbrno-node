@@ -8,7 +8,7 @@ require.config({
     }
 });
 
-require(["rest/rest","rest/interceptor/mime", "react", "when"], function(rest,mime,React, when) {
+require(["rest/rest","rest/interceptor/mime", "rest/interceptor/errorCode", "react", "when"], function(rest,mime,errorCode, React, when) {
 	
 	function resetListView() {
 		rest('/api/Rappers').then(function(response) {
@@ -87,7 +87,7 @@ require(["rest/rest","rest/interceptor/mime", "react", "when"], function(rest,mi
 			ga('send', 'event', 'votebox', 'click', rapperSide);
 			rapperBox.props.updateReloading(true);
 
-			client = rest.chain(mime, { mime: 'application/json' });
+			client = rest.chain(mime, { mime: 'application/json' }).chain(errorCode);
 			client({ method: 'POST', path: "/api/Vote", entity: {side:rapperSide} }).then(function(response) {
 				var twoRandomPromise = rest('/api/Rappers/tworandom');
 
@@ -104,7 +104,15 @@ require(["rest/rest","rest/interceptor/mime", "react", "when"], function(rest,mi
     					resetVoteView(response);
     				});
     			} ,500);
-    		});
+    		},function(response) {
+                console.error('vote error: ', response);
+                setTimeout(function () {
+                    console.log("show view")
+                    rapperBox.props.updateReloading(false);
+                    rapperBox.setState({voted: false});
+                    getTwoRandomRappers(resetVoteView);
+                }, 500);
+            });
   		},
 
 		render: function() {
