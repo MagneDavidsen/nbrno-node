@@ -170,8 +170,10 @@ require(["rest/rest","rest/interceptor/mime", "rest/interceptor/errorCode", "rea
 		render: function() {
 			return (
 				<div className="voteView">
-				<h1>norgesbesterapper.no</h1>
-				
+                    <img className="nbrnoimg" src="styles/nbrlogo.png"/>
+                    <img className="nbrnoimg" src="styles/nbr.png"/>
+                    <img className="nbrnoimg" src="styles/nbrlogo.png"/>
+
 				<RappersView data={this.props.data} />
 				</div>
 				);
