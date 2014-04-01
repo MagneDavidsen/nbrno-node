@@ -1,6 +1,7 @@
 var db = require('./db');
 var models = require('./models');
 var utils = require('./utils');
+var util = require('util');
 var NodeCache = require("node-cache");
 
 var fiveMinutes = 60 * 10;
@@ -136,12 +137,17 @@ function getAllRappersWeek(req, res) {
 function getTwoRandomRappers(req, res) {
 
     function getTwoRappersAndSendResponse(rappers) {
-        var twoRandomRappers = utils.getTwoRandomElementsFrom(rappers);
+        var rappersObject = utils.getTwoRandomElementsFrom(rappers);
         var cookie = req.header('Cookie');
-        sessionVoteMap[cookie] = {left: twoRandomRappers[0], right: twoRandomRappers[1]};
+
+        var twoRandomRappers = {left: rappersObject[0], right: rappersObject[1]}
+
+        sessionVoteMap[cookie] = twoRandomRappers;
+
+        util.debug("getTwoRandomRappers: " + twoRandomRappers.left.name + " & " + twoRandomRappers.right.name);
 
         res.setHeader('Cache-Control', 'no-cache');
-        res.send(200, {left: twoRandomRappers[0], right: twoRandomRappers[1]});
+        res.send(200, twoRandomRappers);
     }
 
     var allRappers;
