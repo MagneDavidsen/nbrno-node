@@ -17,6 +17,7 @@
         "run-sequence": "0.3.6",
         "rest": "1.0.3",
         "newrelic": "1.4.0",
-        "node-cache": "0.4.1"
+        "node-cache": "0.4.1",
+        "cloudinary": ""
       }
     }
