@@ -173,8 +173,11 @@ require(["rest/rest","rest/interceptor/mime", "rest/interceptor/errorCode", "rea
                     <img className="nbrnoimg" src="styles/nbrlogo.png"/>
                     <img className="nbrnoimg" src="styles/nbr.png"/>
                     <img className="nbrnoimg" src="styles/nbrlogo.png"/>
+                    <h2>Hvem er best?</h2>
+
 
 				<RappersView data={this.props.data} />
+
 				</div>
 				);
 		}
