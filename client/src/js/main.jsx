@@ -62,7 +62,14 @@ require(["rest/rest", "rest/interceptor/mime", "rest/interceptor/errorCode", "re
     function resetVoteView(response) {
         React.renderComponent(
             <VoteView data={JSON.parse(response.entity)} />,
-            document.getElementById('voteView'));
+            document.getElementById('voteView'), function(){
+                var leftPic = document.getElementById('leftpic');
+
+                leftPic.addEventListener('load', function () {
+                    console.log("changed!");
+                });
+
+            });
     }
 
     var RapperListModule = React.createClass({
