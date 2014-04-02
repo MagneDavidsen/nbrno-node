@@ -197,29 +197,36 @@ function vote(req, res) {
 
     var rappersToVoteFor = sessionVoteMap[cookie]
 
-    var winner;
-    var loser;
+    if(!rappersToVoteFor) {
+        console.error("No rappers in session");
+        res.send(200, {name: "name", wins: 0, losses: 0});
+    } else {
+        var winner;
+        var loser;
 
-    switch (voteElement.side) {
-        case "left":
-            winner = rappersToVoteFor.left;
-            loser = rappersToVoteFor.right;
-            break;
-        case "right":
-            winner = rappersToVoteFor.right;
-            loser = rappersToVoteFor.left;
-            break;
-        default:
-            console.error("Side is neither left or right: " + voteElement.side)
+        switch (voteElement.side) {
+            case "left":
+                winner = rappersToVoteFor.left;
+                loser = rappersToVoteFor.right;
+                break;
+            case "right":
+                winner = rappersToVoteFor.right;
+                loser = rappersToVoteFor.left;
+                break;
+            default:
+                console.error("Side is neither left or right: " + voteElement.side)
+        }
+        registerVote(winner, loser, req.ip);
+
+        console.time("db.findWinner");
+        models.Rapper.findOne({_id: winner._id}).select('name -_id wins losses').exec(function (err, rapper) {
+            if (err) return console.error(err);
+            console.timeEnd("db.findWinner");
+            res.send(200, {name: rapper.name, wins: rapper.wins.length, losses: rapper.losses.length});
+        });
     }
-    registerVote(winner, loser, req.ip);
 
-    console.time("db.findWinner");
-    models.Rapper.findOne({_id: winner._id}).select('name -_id wins losses').exec(function (err, rapper) {
-        if (err) return console.error(err);
-        console.timeEnd("db.findWinner");
-        res.send(200, {name: rapper.name, wins: rapper.wins.length, losses: rapper.losses.length});
-    });
+
 }
 
 function getImg(rappername) {
