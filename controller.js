@@ -161,7 +161,7 @@ function getTwoRandomRappers(req, res) {
         getTwoRappersAndSendResponse(allRappers);
     } else {
         console.time("db.getAllRappersForRandom");
-        models.Rapper.find().select('name picture.fileName').exec(function (err, rappers) {
+        models.Rapper.find().select('name picture').exec(function (err, rappers) {
             if (err) return console.error(err);
             console.timeEnd("db.getAllRappersForRandom");
 

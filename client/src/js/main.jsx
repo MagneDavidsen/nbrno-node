@@ -127,14 +127,14 @@ require(["rest/rest","rest/interceptor/mime", "rest/interceptor/errorCode", "rea
 
 			var notVotedBox = (
 				<div className={classes} onClick={this.handleClick} >
-					<img src={"pictures/" + this.props.picture.fileName} />
+                    <img src={"data:" +this.props.picture.contentType + ";base64," + this.props.picture.data} />
 					<div className="rapperName">{this.props.rapperName}</div>
 				</div>
 				);
 
 			var votedBox = (
 				<div className={classes}>
-					<img src={"pictures/" + this.props.picture.fileName} />
+                    <img src={"data:" +this.props.picture.contentType + ";base64," + this.props.picture.data} />
 					<div className="rapperName">{this.props.rapperName}</div>					
 				</div>
 				);
