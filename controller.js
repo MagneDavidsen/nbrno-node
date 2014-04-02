@@ -3,9 +3,6 @@ var models = require('./models');
 var utils = require('./utils');
 var util = require('util');
 var NodeCache = require("node-cache");
-var memjs = require('memjs')
-
-var mc = memjs.Client.create()
 
 var fiveMinutes = 60 * 10;
 
@@ -140,11 +137,11 @@ function getTwoRandomRappers(req, res) {
 
     function getTwoRappersAndSendResponse(rappers) {
         var rappersObject = utils.getTwoRandomElementsFrom(rappers);
-        var cookie = req.header('Cookie');
 
         var twoRandomRappers = {left: rappersObject[0], right: rappersObject[1]}
 
-        mc.set(cookie, twoRandomRappers);
+        req.session.leftRapperId = twoRandomRappers.left._id;
+        req.session.rightRapperId = twoRandomRappers.right._id;
 
         util.debug("getTwoRandomRappers: " + twoRandomRappers.left.name + " & " + twoRandomRappers.right.name);
 
@@ -176,17 +173,18 @@ function getTwoRandomRappers(req, res) {
     }
 }
 
-function registerVote(winningRapper, losingRapper, ipAddress) {
+function registerVote(winningRapperId, losingRapperId, ipAddress) {
     console.time("db.updateWinner");
-    models.Rapper.update({_id: winningRapper._id },
-        {$push: { wins: {vs: losingRapper._id, ip: ipAddress} }}, {upsert: true}, function (err, data) {
+    util.debug("vote - winnerId: " +winningRapperId + ", loserId: " +losingRapperId);
+    models.Rapper.update({_id: winningRapperId },
+        {$push: { wins: {vs: losingRapperId, ip: ipAddress} }}, {upsert: true}, function (err, data) {
             if (err) return console.error(err);
             console.timeEnd("db.updateWinner");
         });
 
     console.time("db.updateLoser");
-    models.Rapper.update({_id: losingRapper._id },
-        {$push: { losses: {vs: winningRapper._id, ip: ipAddress} }}, {upsert: true}, function (err, data) {
+    models.Rapper.update({_id: losingRapperId },
+        {$push: { losses: {vs: winningRapperId, ip: ipAddress} }}, {upsert: true}, function (err, data) {
             if (err) return console.error(err);
             console.timeEnd("db.updateLoser");
         });
@@ -195,37 +193,32 @@ function registerVote(winningRapper, losingRapper, ipAddress) {
 function vote(req, res) {
 
     var voteElement = req.body;
-    var cookie = req.header('Cookie')
+    var leftRapperId = req.session.leftRapperId;
+    var rightRapperId = req.session.rightRapperId;
 
-    var rappersToVoteFor = mc.get(cookie);
-
-    if(!rappersToVoteFor) {
-        util.error("No rappers in session");
-        res.send(200, {name: "name", wins: 0, losses: 0});
+    if(!leftRapperId) {
+        util.error("ERROR: No rappers in session");
+        res.send(200, {});
     } else {
-        var winner;
-        var loser;
+        var winnerId;
+        var loserId;
 
         switch (voteElement.side) {
             case "left":
-                winner = rappersToVoteFor.left;
-                loser = rappersToVoteFor.right;
+                winnerId = leftRapperId;
+                loserId = rightRapperId;
                 break;
             case "right":
-                winner = rappersToVoteFor.right;
-                loser = rappersToVoteFor.left;
+                winnerId = rightRapperId;
+                loserId = leftRapperId;
                 break;
             default:
-                console.error("Side is neither left or right: " + voteElement.side)
+                console.error("ERROR: Side is neither left or right: " + voteElement.side)
         }
-        registerVote(winner, loser, req.ip);
+        registerVote(winnerId, loserId, req.ip);
 
         res.send(200, {});
     }
-}
-
-function getImg(rappername) {
-    models.Rapper.findOne()
 }
 
 module.exports = {

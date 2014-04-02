@@ -18,6 +18,11 @@ var dist = env === 'production' ? 'dist' : 'client/src';
 app.configure(function(){
   app.use(express.logger('dev'));
   app.use(express.bodyParser());
+  app.use(express.cookieParser());
+  app.use(express.cookieSession({
+        key: 'app.sess',
+        secret: 'SUPERsekret'
+    }));
   app.use(express.static(path.join(__dirname, dist)));
 });
 
