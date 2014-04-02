@@ -3,10 +3,12 @@ var models = require('./models');
 var utils = require('./utils');
 var util = require('util');
 var NodeCache = require("node-cache");
+var memjs = require('memjs')
+
+var mc = memjs.Client.create()
 
 var fiveMinutes = 60 * 10;
 
-var sessionVoteMap = {};
 var dbCache = new NodeCache({ stdTTL: fiveMinutes, checkperiod: fiveMinutes });
 
 function rappersAndVotesSince(date) {
@@ -142,7 +144,7 @@ function getTwoRandomRappers(req, res) {
 
         var twoRandomRappers = {left: rappersObject[0], right: rappersObject[1]}
 
-        sessionVoteMap[cookie] = twoRandomRappers;
+        mc.set(cookie, twoRandomRappers);
 
         util.debug("getTwoRandomRappers: " + twoRandomRappers.left.name + " & " + twoRandomRappers.right.name);
 
@@ -195,10 +197,10 @@ function vote(req, res) {
     var voteElement = req.body;
     var cookie = req.header('Cookie')
 
-    var rappersToVoteFor = sessionVoteMap[cookie]
+    var rappersToVoteFor = mc.get(cookie);
 
     if(!rappersToVoteFor) {
-        console.error("No rappers in session");
+        util.error("No rappers in session");
         res.send(200, {name: "name", wins: 0, losses: 0});
     } else {
         var winner;
@@ -218,15 +220,8 @@ function vote(req, res) {
         }
         registerVote(winner, loser, req.ip);
 
-        console.time("db.findWinner");
-        models.Rapper.findOne({_id: winner._id}).select('name -_id wins losses').exec(function (err, rapper) {
-            if (err) return console.error(err);
-            console.timeEnd("db.findWinner");
-            res.send(200, {name: rapper.name, wins: rapper.wins.length, losses: rapper.losses.length});
-        });
+        res.send(200, {});
     }
-
-
 }
 
 function getImg(rappername) {
