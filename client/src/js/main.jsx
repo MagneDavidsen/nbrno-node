@@ -31,7 +31,15 @@ require(["rest/rest","rest/interceptor/mime", "rest/interceptor/errorCode", "rea
 	}
 
 	function getTwoRandomRappers(callback) {
-		rest('/api/Rappers/tworandom').then(callback);
+        client = rest.chain(errorCode);
+
+        client({ method: 'GET', path: "/api/Rappers/tworandom"}).then(callback,
+            function(response) {
+            console.error('getTwoRandomRappersError: ', JSON.stringify(response));
+            setTimeout(function () {
+                getTwoRandomRappers(callback);
+            }, 500);
+        });
 	}
 
 	function resetVoteView(response) {
@@ -105,7 +113,7 @@ require(["rest/rest","rest/interceptor/mime", "rest/interceptor/errorCode", "rea
     				});
     			} ,500);
     		},function(response) {
-                console.error('vote error: ', response);
+                console.error('vote error: ', JSON.stringify(response));
                 setTimeout(function () {
                     console.log("show view")
                     rapperBox.props.updateReloading(false);

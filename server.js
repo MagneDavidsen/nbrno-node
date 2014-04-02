@@ -16,7 +16,6 @@ var env = process.env.NODE_ENV;
 var dist = env === 'production' ? 'dist' : 'client/src';
 
 app.configure(function(){
-  app.use(express.favicon("favicon.ico"));
   app.use(express.logger('dev'));
   app.use(express.bodyParser());
   app.use(express.static(path.join(__dirname, dist)));
