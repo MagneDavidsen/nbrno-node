@@ -227,8 +227,8 @@ function vote(req, res) {
 
 module.exports = {
     getAllRappers: getAllRappers,
-    getAllRappersWeek: getAllRappersWeek,
-    getAllRappersMonth: getAllRappersMonth,
+    getAllRappersWeek: getAllRappers,
+    getAllRappersMonth: getAllRappers,
     getTwoRandomRappers: getTwoRandomRappers,
     vote: vote
 };
