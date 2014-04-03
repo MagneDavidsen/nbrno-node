@@ -25,7 +25,7 @@ function filterRappersOnFromDate(rappers, fromDate){
 
 function setScoreAndSort(rappers) {
     var rappersResponse = rappers.map(function (rapper) {
-        return {name: rapper.name, score: rapper.wins - rapper.losses}
+        return {name: rapper.name, score: rapper.totalWins - rapper.totalLosses}
     });
 
     rappersResponse.sort(function (a, b) {
@@ -51,12 +51,7 @@ function getAllRappers(req, res) {
         returnRapperListResponse(res, allRappers);
     } else {
         console.time("db.getAllRappers");
-        models.Rapper.aggregate([
-            {$unwind: '$wins'},
-            {$group: {'_id': '$_id', 'name': {$first: '$name'}, 'losses': {$first: '$losses'}, 'wins': {$sum: 1}}},
-            {$unwind: '$losses'},
-            {$group: {'_id': '$_id', 'name': {$first: '$name'}, 'losses': {$sum: 1}, 'wins': {$first: '$wins'}}}
-        ]).exec(function (err, rappers) {
+        models.Rapper.find().select('name totalWins totalLosses -_id').exec(function (err, rappers) {
             if (err) return console.error(err);
             console.timeEnd("db.getAllRappers");
             rappersResponse = setScoreAndSort(rappers);
@@ -178,20 +173,34 @@ function getTwoRandomRappers(req, res) {
 }
 
 function registerVote(winningRapperId, losingRapperId, ipAddress) {
-    console.time("db.updateWinner");
-    util.debug("vote - winnerId: " +winningRapperId + ", loserId: " +losingRapperId);
-    models.Rapper.update({_id: winningRapperId },
-        {$push: { wins: {vs: losingRapperId, ip: ipAddress} }}, {upsert: true}, function (err, data) {
-            if (err) return console.error(err);
-            console.timeEnd("db.updateWinner");
-        });
 
-    console.time("db.updateLoser");
-    models.Rapper.update({_id: losingRapperId },
-        {$push: { losses: {vs: winningRapperId, ip: ipAddress} }}, {upsert: true}, function (err, data) {
-            if (err) return console.error(err);
-            console.timeEnd("db.updateLoser");
-        });
+    util.debug("vote - winnerId: " +winningRapperId + ", loserId: " +losingRapperId);
+
+    var today = new Date();
+    today.setHours(0,0,0,0);
+
+    var vote = new models.Vote;
+    vote.ip = ipAddress;
+    vote.winner = winningRapperId;
+    vote.loser = losingRapperId;
+
+    console.time("db.saveVote");
+    vote.save(function (err, vote) {
+        if (err) return console.error(err)
+        console.timeEnd("db.saveVote");;
+    });
+
+    console.time("db.updateWinnerCounter");
+    models.Rapper.update({_id: winningRapperId }, { $inc: {totalWins: 1 }}, function(err, data){
+        if (err) return console.error(err);
+        console.timeEnd("db.updateWinnerCounter");
+    });
+
+    console.time("db.updateLoserCounter");
+    models.Rapper.update({_id: losingRapperId }, { $inc: {totalLosses: 1 }}, function(err, data){
+        if (err) return console.error(err);
+        console.timeEnd("db.updateLoserCounter");
+    });
 }
 
 function vote(req, res) {
