@@ -8,15 +8,19 @@ var fiveMinutes = 60 * 10;
 
 var dbCache = new NodeCache({ stdTTL: fiveMinutes, checkperiod: fiveMinutes });
 
-function rappersAndVotesSince(date) {
-    return models.Rapper.aggregate([
-        {$unwind: '$wins'},
-        {$match: {'wins.timestamp': {$gte: date}}},
-        {$group: {'_id': '$_id', 'name': {$first: '$name'}, 'losses': {$first: '$losses'}, 'wins': {$sum: 1}}},
-        {$unwind: '$losses'},
-        {$match: {'losses.timestamp': {$gte: date}}},
-        {$group: {'_id': '$_id', 'name': {$first: '$name'}, 'losses': {$sum: 1}, 'wins': {$first: '$wins'}}}
-    ]);
+function filterRappersOnFromDate(rappers, fromDate){
+    function isVoteInRange(vote){
+        return vote.timestamp > fromDate;
+    }
+
+    var newRappers = rappers.map(function(rapper){
+        var newRapper = rapper;
+        newRapper.wins = rapper.wins.filter(isVoteInRange);
+        newRapper.losses = rapper.losses.filter(isVoteInRange);
+        return newRapper;
+    })
+
+    return newRappers;
 }
 
 function setScoreAndSort(rappers) {
@@ -81,17 +85,17 @@ function getAllRappersMonth(req, res) {
         returnRapperListResponse(res, monthRappers);
     } else {
 
-        console.time("db.getMonthRappers");
-        rappersAndVotesSince(firstDayOfTheMonth).exec(function (err, rappers) {
+        console.time("db.getAllRappersForMonth");
+        models.Rapper.find().select('name wins losses').exec(function (err, rappers) {
             if (err) return console.error(err);
-            console.timeEnd("db.getMonthRappers");
-            rappersResponse = setScoreAndSort(rappers);
+            console.timeEnd("db.getAllRappersForMonth");
+            var monthResponse = filterRappersOnFromDate(rappers, firstDayOfTheMonth);
 
-            dbCache.set("monthRappers", rappersResponse, function (err, success) {
+            dbCache.set("monthRappers", monthResponse, function (err, success) {
                 if (err) return console.error(err);
             });
 
-            returnRapperListResponse(res, rappersResponse);
+            returnRapperListResponse(res, monthResponse)
         });
     }
 }
@@ -116,19 +120,18 @@ function getAllRappersWeek(req, res) {
     if (weekRappers) {
         returnRapperListResponse(res, weekRappers);
     } else {
-        var monday = getMonday();
 
-        console.time("db.getWeeksRappers");
-        rappersAndVotesSince(monday).exec(function (err, rappers) {
+        console.time("db.getAllRappersForWeek");
+        models.Rapper.find().select('name wins losses').exec(function (err, rappers) {
             if (err) return console.error(err);
-            console.timeEnd("db.getWeeksRappers");
-            rappersResponse = setScoreAndSort(rappers);
+            console.timeEnd("db.getAllRappersForWeek");
+            var weekResponse = filterRappersOnFromDate(rappers, getMonday());
 
-            dbCache.set("weekRappers", rappersResponse, function (err, success) {
+            dbCache.set("weekRappers", weekResponse, function (err, success) {
                 if (err) return console.error(err);
             });
 
-            returnRapperListResponse(res, rappersResponse);
+            returnRapperListResponse(res, weekResponse)
         });
     }
 }
