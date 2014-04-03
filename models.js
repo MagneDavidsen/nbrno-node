@@ -10,22 +10,15 @@ var voteSchema = new Schema({
 var newVoteSchema = new Schema({
     ip: { type: String },
     timestamp: {  type: Date, default: Date.now },
-    winner: { _rapperId: Schema.Types.ObjectId },
-    loser: { _rapperId: Schema.Types.ObjectId }
+    winner: { type: Schema.Types.ObjectId },
+    loser: { type: Schema.Types.ObjectId }
 })
-
-var daySchema = new Schema({
-    date: { type: Date },
-    wins: {type: Number, default: 0},
-    losses: {type: Number, default: 0}
-});
 
 var rapperSchema = new Schema({
   name: { type: String },
   picture: { data: String, contentType: String, fileName: String },
   wins: [voteSchema],
   losses: [voteSchema],
-  days: [daySchema],
   totalWins: {type: Number, default: 0},
   totalLosses: {type: Number, default: 0}
 })
