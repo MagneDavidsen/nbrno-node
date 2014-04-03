@@ -20,39 +20,37 @@ require(["rest/rest", "rest/interceptor/mime", "rest/interceptor/errorCode", "re
         function renderTwoRandomRappers(response) {
             var rappers = JSON.parse(response.entity);
 
-            var imgLeft = new Image();
-            var imgRight = new Image();
+            var imgLeft = document.getElementById('leftpic');
+            var imgRight = document.getElementById('rightpic');
 
             imgLeft.onload = function(){
                 console.log("imgLeft loaded");
                 if(imgRight.complete){
                     console.log("both images loaded");
                     //wait 500ms before rendering
-                    setTimeout(function () {
                         rappers.left.image = imgLeft;
                         rappers.right.image = imgRight;
                         console.log(rappers);
                         renderFunction(rappers);
-                    }, 500);
                 }
             }
 
             imgRight.onload = function(){
                 console.log("imgRight loaded");
-                if(imgLeft.complete){
+                if(imgLeft.complete) {
                     console.log("both images loaded");
                     //wait 500ms before rendering
-                    setTimeout(function () {
-                        rappers.left.image = imgLeft;
-                        rappers.right.image = imgRight;
-                        console.log(rappers);
-                        renderFunction(rappers);
-                    }, 500);
+                    rappers.left.image = imgLeft;
+                    rappers.right.image = imgRight;
+                    console.log(rappers);
+                    renderFunction(rappers);
                 }
             }
 
-            imgLeft.src = "pictures/" + rappers.left.picture.fileName;
-            imgRight.src = "pictures/" + rappers.right.picture.fileName;
+            setTimeout(function () {
+                imgLeft.src = "pictures/" + rappers.left.picture.fileName;
+                imgRight.src = "pictures/" + rappers.right.picture.fileName;
+            }, 500);
 
 
         }
@@ -139,12 +137,14 @@ require(["rest/rest", "rest/interceptor/mime", "rest/interceptor/errorCode", "re
     var RapperBox = React.createClass({
 
         getInitialState: function () {
-            return {voted: false};
+            return {voted: false, loadPictures: true};
+
         },
 
         handleClick: function (event) {
             var rapperSide = this.props.side;
             var rapperBox = this;
+            this.state.loadPictures = false;
 
             function handleVotingFailed(response) {
                 console.error('vote error: ', JSON.stringify(response));
@@ -189,12 +189,20 @@ require(["rest/rest", "rest/interceptor/mime", "rest/interceptor/errorCode", "re
                 'reloading': this.props.reloading
             });
 
-            return (
+            var imgLoad = (
                 <div className={classes} onClick={this.state.voted ? "" : this.handleClick} >
                     <img id={this.props.side + "pic"} src={"pictures/" + this.props.fileName} />
                     <div className="rapperName">{this.props.rapperName}</div>
-                </div>
-                );
+                </div>)
+
+            var img = (
+                <div className={classes} onClick={this.state.voted ? "" : this.handleClick} >
+                    <img id={this.props.side + "pic"} />
+                    <div className="rapperName">{this.props.rapperName}</div>
+                </div>)
+
+
+            return this.state.loadPictures ? imgLoad : img;
         }
     });
 
