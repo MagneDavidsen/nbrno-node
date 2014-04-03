@@ -25,15 +25,19 @@ function filterRappersOnFromDate(rappers, fromDate){
 
 function setScoreAndSort(rappers) {
     var rappersResponse = rappers.map(function (rapper) {
-        return {name: rapper.name, score: rapper.totalWins - rapper.totalLosses}
+        var winPercentage = (rapper.totalWins + rapper.totalLosses) > 5 ? rapper.totalWins / (rapper.totalWins + rapper.totalLosses) : 0;
+        return {name: rapper.name, score: winPercentage}
     });
 
     rappersResponse.sort(function (a, b) {
         return a.score - b.score
-    }).reverse().map(function (rapper){
+    }).reverse();
+
+    var withoutscore = rappersResponse.map(function (rapper){
         return {name: rapper.name}
     });
-    return rappersResponse;
+
+    return withoutscore;
 }
 
 function returnRapperListResponse(res, rappers) {
