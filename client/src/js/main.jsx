@@ -3,7 +3,7 @@
 require.config({
     baseUrl: "/js/lib",
     paths: {
-        'react': ['//cdnjs.cloudflare.com/ajax/libs/react/0.9.0/react-with-addons.min', 'react/react'],
+        'react': ['//cdnjs.cloudflare.com/ajax/libs/react/0.9.0/react-with-addons', 'react/react'],
         'when': ['//cdnjs.cloudflare.com/ajax/libs/when/2.7.1/when.min', 'when/when']
     }
 });
@@ -23,24 +23,23 @@ require(["rest/rest", "rest/interceptor/mime", "rest/interceptor/errorCode", "re
             var imgLeft = document.getElementById('leftpic');
             var imgRight = document.getElementById('rightpic');
 
-            function setImagesAndRender(){
+            function setImagesAndRender() {
                 console.log("both images loaded");
                 rappers.left.image = imgLeft;
                 rappers.right.image = imgRight;
-                console.log(rappers);
                 renderFunction(rappers);
             }
 
-            imgLeft.onload = function(){
+            imgLeft.onload = function () {
                 console.log("imgLeft loaded");
-                if(imgRight.complete){
+                if (imgRight.complete) {
                     setImagesAndRender();
                 }
             }
 
-            imgRight.onload = function(){
+            imgRight.onload = function () {
                 console.log("imgRight loaded");
-                if(imgLeft.complete) {
+                if (imgLeft.complete) {
                     setImagesAndRender();
                 }
             }
@@ -90,6 +89,12 @@ require(["rest/rest", "rest/interceptor/mime", "rest/interceptor/errorCode", "re
         React.renderComponent(
             <VoteView data={rappers} />,
             document.getElementById('voteView'));
+    }
+
+    function initVoteView(rappers) {
+        React.renderComponent(
+            <VoteView data={rappers} />,
+            document.getElementById('voteView'));
 
     }
 
@@ -133,20 +138,13 @@ require(["rest/rest", "rest/interceptor/mime", "rest/interceptor/errorCode", "re
     var RapperBox = React.createClass({
 
         getInitialState: function () {
-            return {voted: false, loadPictures: true};
+            return {voted: false};
 
         },
 
         handleClick: function (event) {
             var rapperSide = this.props.side;
             var rapperBox = this;
-
-
-            //wait 500ms and set loadPictures
-            setTimeout(function() {
-                this.state.loadPictures = false;
-            }, 500);
-
 
             function handleVotingFailed(response) {
                 console.error('vote error: ', JSON.stringify(response));
@@ -191,20 +189,25 @@ require(["rest/rest", "rest/interceptor/mime", "rest/interceptor/errorCode", "re
                 'reloading': this.props.reloading
             });
 
+            var picId = this.props.side + "pic";
+
             var imgLoad = (
                 <div className={classes} onClick={this.state.voted ? "" : this.handleClick} >
-                    <img id={this.props.side + "pic"} src={"pictures/" + this.props.fileName} />
+                    <img id={picId} src={"pictures/" + this.props.fileName} />
                     <div className="rapperName">{this.props.rapperName}</div>
                 </div>)
 
             var img = (
                 <div className={classes} onClick={this.state.voted ? "" : this.handleClick} >
-                    <img id={this.props.side + "pic"} />
+                    <img id={picId} />
                     <div className="rapperName">{this.props.rapperName}</div>
                 </div>)
 
+            var picture = document.getElementById(picId);
+            console.log(picture);
 
-            return this.state.loadPictures ? imgLoad : img;
+
+            return picture ? img : imgLoad;
         }
     });
 
@@ -222,12 +225,15 @@ require(["rest/rest", "rest/interceptor/mime", "rest/interceptor/errorCode", "re
             var leftRapper = this.props.data.left;
             var rightRapper = this.props.data.right;
 
+            console.log("render rappersview state: " + this.props.firstTime);
+
+
             return (
                 <div className="voteBox">
                     <RapperBox updateReloading={this.setReloading} reloading={this.state.reloading} rapperName={leftRapper.name}
-                    fileName={leftRapper.picture.fileName} side="left" image={leftRapper.image} />
+                    fileName={leftRapper.picture.fileName} side="left" firstTime={this.props.firstTime} />
                     <RapperBox updateReloading={this.setReloading} reloading={this.state.reloading} rapperName={rightRapper.name}
-                    fileName={rightRapper.picture.fileName} side="right" image={rightRapper.image} />
+                    fileName={rightRapper.picture.fileName} side="right" firstTime={this.props.firstTime} />
                 </div>
                 );
         }
@@ -249,19 +255,21 @@ require(["rest/rest", "rest/interceptor/mime", "rest/interceptor/errorCode", "re
         }
     });
 
+
+
     React.renderComponent(
         <RapperListModule />,
         document.getElementById('listView'));
 
-    getTwoRandomRappersPromise().then(function(response){
-        resetVoteView(JSON.parse(response.entity));
+    getTwoRandomRappersPromise().then(function (response) {
+        initVoteView(JSON.parse(response.entity));
     }, function (response) {
-            console.error('getTwoRandomRappersError: ', JSON.stringify(response));
-            //wait 500ms before trying again
-            setTimeout(function () {
-                getTwoRandomRappersAndThen(resetVoteView);
-            }, 1000);
+        console.error('getTwoRandomRappersError: ', JSON.stringify(response));
+        //wait 500ms before trying again
+        setTimeout(function () {
+            getTwoRandomRappersAndThen(initVoteView);
+        }, 1000);
     });
     resetListView();
-})
-;
+});
+
