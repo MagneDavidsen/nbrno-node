@@ -23,27 +23,25 @@ require(["rest/rest", "rest/interceptor/mime", "rest/interceptor/errorCode", "re
             var imgLeft = document.getElementById('leftpic');
             var imgRight = document.getElementById('rightpic');
 
+            function setImagesAndRender(){
+                console.log("both images loaded");
+                rappers.left.image = imgLeft;
+                rappers.right.image = imgRight;
+                console.log(rappers);
+                renderFunction(rappers);
+            }
+
             imgLeft.onload = function(){
                 console.log("imgLeft loaded");
                 if(imgRight.complete){
-                    console.log("both images loaded");
-                    //wait 500ms before rendering
-                        rappers.left.image = imgLeft;
-                        rappers.right.image = imgRight;
-                        console.log(rappers);
-                        renderFunction(rappers);
+                    setImagesAndRender();
                 }
             }
 
             imgRight.onload = function(){
                 console.log("imgRight loaded");
                 if(imgLeft.complete) {
-                    console.log("both images loaded");
-                    //wait 500ms before rendering
-                    rappers.left.image = imgLeft;
-                    rappers.right.image = imgRight;
-                    console.log(rappers);
-                    renderFunction(rappers);
+                    setImagesAndRender();
                 }
             }
 
@@ -51,8 +49,6 @@ require(["rest/rest", "rest/interceptor/mime", "rest/interceptor/errorCode", "re
                 imgLeft.src = "pictures/" + rappers.left.picture.fileName;
                 imgRight.src = "pictures/" + rappers.right.picture.fileName;
             }, 500);
-
-
         }
 
         function handleTwoRandomRappersError(response) {
@@ -144,7 +140,13 @@ require(["rest/rest", "rest/interceptor/mime", "rest/interceptor/errorCode", "re
         handleClick: function (event) {
             var rapperSide = this.props.side;
             var rapperBox = this;
-            this.state.loadPictures = false;
+
+
+            //wait 500ms and set loadPictures
+            setTimeout(function() {
+                this.state.loadPictures = false;
+            }, 500);
+
 
             function handleVotingFailed(response) {
                 console.error('vote error: ', JSON.stringify(response));
