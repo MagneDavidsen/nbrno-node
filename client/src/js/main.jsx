@@ -75,7 +75,7 @@ require(["rest/rest", "rest/interceptor/mime", "rest/interceptor/errorCode", "re
         rest('/api/Rappers/week').then(function (response) {
             React.renderComponent(
                 <RapperList data={JSON.parse(response.entity)} listName="Ukens beste rapper"/>,
-                document.getElementById('weekRappers'));
+                document.getElementById('allRappers'));
         });
 
         rest('/api/Rappers/day').then(function (response) {
@@ -104,8 +104,8 @@ require(["rest/rest", "rest/interceptor/mime", "rest/interceptor/errorCode", "re
                 <div>
                     <div className="rapperLists" >
                         <div className="rapperListModule" id="allRappers" />
-                        <div className="rapperListModule" id="dayRappers" />
                         <div className="rapperListModule" id="weekRappers" />
+                        <div className="rapperListModule" id="dayRappers" />
                     </div>
                     <div className="rapperLists" >
                         <div className="rapperListModule">
