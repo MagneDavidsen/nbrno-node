@@ -99,6 +99,16 @@ function getAllRappersMonth(req, res) {
     }
 }
 
+function getAllRappersDay(req, res) {
+    var today = new Date();
+    today.setHours(0,0,0,0);
+
+    return models.Vote.aggregate([
+        {$match: {'timestamp': {$gte: today}}},
+        {$group: {'_id': '$_id', 'name': {$first: '$name'}, 'losses': {$first: '$losses'}, 'wins': {$sum: 1}}}
+    ]);
+}
+
 function getAllRappersWeek(req, res) {
     function getMonday() {
         var d = new Date();
@@ -142,8 +152,8 @@ function getTwoRandomRappers(req, res) {
 
         var twoRandomRappers = {left: rappersObject[0], right: rappersObject[1]}
 
-        req.session.leftRapperId = twoRandomRappers.left._id;
-        req.session.rightRapperId = twoRandomRappers.right._id;
+        req.session.leftRapper = twoRandomRappers.left;
+        req.session.rightRapper = twoRandomRappers.right;
 
         util.debug("getTwoRandomRappers: " + twoRandomRappers.left.name + " & " + twoRandomRappers.right.name);
 
@@ -176,17 +186,19 @@ function getTwoRandomRappers(req, res) {
     }
 }
 
-function registerVote(winningRapperId, losingRapperId, ipAddress) {
+function registerVote(winningRapper, losingRapper, ipAddress) {
 
-    util.debug("vote - winnerId: " +winningRapperId + ", loserId: " +losingRapperId);
+    util.debug("vote - winner: " +winningRapper.name + ", loser: " +losingRapper.name);
 
     var today = new Date();
     today.setHours(0,0,0,0);
 
     var vote = new models.Vote;
     vote.ip = ipAddress;
-    vote.winner = winningRapperId;
-    vote.loser = losingRapperId;
+    vote.winner = winningRapper._id;
+    vote.winnerName  = winningRapper.name;
+    vote.loser = losingRapper._id;
+    vote.loserName  = losingRapper.name;
 
     console.time("db.saveVote");
     vote.save(function (err, vote) {
@@ -195,13 +207,13 @@ function registerVote(winningRapperId, losingRapperId, ipAddress) {
     });
 
     console.time("db.updateWinnerCounter");
-    models.Rapper.update({_id: winningRapperId }, { $inc: {totalWins: 1 }}, function(err, data){
+    models.Rapper.update({_id: winningRapper._id }, { $inc: {totalWins: 1 }}, function(err, data){
         if (err) return console.error(err);
         console.timeEnd("db.updateWinnerCounter");
     });
 
     console.time("db.updateLoserCounter");
-    models.Rapper.update({_id: losingRapperId }, { $inc: {totalLosses: 1 }}, function(err, data){
+    models.Rapper.update({_id: losingRapper._id }, { $inc: {totalLosses: 1 }}, function(err, data){
         if (err) return console.error(err);
         console.timeEnd("db.updateLoserCounter");
     });
@@ -210,29 +222,29 @@ function registerVote(winningRapperId, losingRapperId, ipAddress) {
 function vote(req, res) {
 
     var voteElement = req.body;
-    var leftRapperId = req.session.leftRapperId;
-    var rightRapperId = req.session.rightRapperId;
+    var leftRapper = req.session.leftRapper;
+    var rightRapper = req.session.rightRapper;
 
-    if(!leftRapperId) {
+    if(!leftRapper) {
         util.error("ERROR: No rappers in session");
         res.send(200, {});
     } else {
-        var winnerId;
-        var loserId;
+        var winner;
+        var loser;
 
         switch (voteElement.side) {
             case "left":
-                winnerId = leftRapperId;
-                loserId = rightRapperId;
+                winner = leftRapper;
+                loser = rightRapper;
                 break;
             case "right":
-                winnerId = rightRapperId;
-                loserId = leftRapperId;
+                winner = rightRapper;
+                loser = leftRapper;
                 break;
             default:
                 console.error("ERROR: Side is neither left or right: " + voteElement.side)
         }
-        registerVote(winnerId, loserId, req.ip);
+        registerVote(winner, loser, req.ip);
 
         res.send(200, {});
     }
