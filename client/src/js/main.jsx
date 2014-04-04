@@ -78,10 +78,10 @@ require(["rest/rest", "rest/interceptor/mime", "rest/interceptor/errorCode", "re
                 document.getElementById('weekRappers'));
         });
 
-        rest('/api/Rappers/month').then(function (response) {
+        rest('/api/Rappers/day').then(function (response) {
             React.renderComponent(
-                <RapperList data={JSON.parse(response.entity)} listName="Månedens beste rapper"/>,
-                document.getElementById('monthRappers'));
+                <RapperList data={JSON.parse(response.entity)} listName="Dagens beste rapper"/>,
+                document.getElementById('dayRappers'));
         });
     }
 
@@ -104,7 +104,7 @@ require(["rest/rest", "rest/interceptor/mime", "rest/interceptor/errorCode", "re
                 <div>
                     <div className="rapperLists" >
                         <div className="rapperListModule" id="allRappers" />
-                        <div className="rapperListModule" id="monthRappers" />
+                        <div className="rapperListModule" id="dayRappers" />
                         <div className="rapperListModule" id="weekRappers" />
                     </div>
                     <div className="rapperLists" >
@@ -180,6 +180,7 @@ require(["rest/rest", "rest/interceptor/mime", "rest/interceptor/errorCode", "re
         },
 
         render: function () {
+
             console.log("rendering rapperbox");
 
             var cx = React.addons.classSet;

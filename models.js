@@ -1,7 +1,7 @@
 var mongoose = require('mongoose')
 var Schema = mongoose.Schema
 
-var newVoteSchema = new Schema({
+var voteSchema = new Schema({
     ip: { type: String },
     timestamp: {  type: Date, default: Date.now },
     winnerName: { type: String },
@@ -18,7 +18,7 @@ var rapperSchema = new Schema({
 })
 
 var Rapper = mongoose.model('Rapper', rapperSchema)
-var Vote = mongoose.model('Vote', newVoteSchema)
+var Vote = mongoose.model('Vote', voteSchema)
 
 module.exports = {
   Rapper: Rapper,
