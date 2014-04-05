@@ -10,24 +10,9 @@ var fiveMinutes = 60 * 10;
 
 var dbCache = new NodeCache({ stdTTL: fiveMinutes, checkperiod: fiveMinutes });
 
-function filterRappersOnFromDate(rappers, fromDate){
-    function isVoteInRange(vote){
-        return vote.timestamp > fromDate;
-    }
-
-    var newRappers = rappers.map(function(rapper){
-        var newRapper = rapper;
-        newRapper.wins = rapper.wins.filter(isVoteInRange);
-        newRapper.losses = rapper.losses.filter(isVoteInRange);
-        return newRapper;
-    })
-
-    return newRappers;
-}
-
 function setScoreAndSort(rappers) {
     var rappersResponse = rappers.map(function (rapper) {
-        var winPercentage = (rapper.totalWins + rapper.totalLosses) > 5 ? rapper.totalWins / (rapper.totalWins + rapper.totalLosses) : 0;
+        var winPercentage = (rapper.totalWins + rapper.totalLosses) > 1 ? rapper.totalWins / (rapper.totalWins + rapper.totalLosses) : 0;
         return {name: rapper.name, score: winPercentage}
     });
 
