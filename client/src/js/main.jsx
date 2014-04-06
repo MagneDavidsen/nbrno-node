@@ -72,7 +72,7 @@ require(["rest/rest", "rest/interceptor/mime", "rest/interceptor/errorCode", "re
                 document.getElementById('allRappers'));
         });
 
-        rest('/api/Rappers').then(function (response) {
+        rest('/api/Rappers/week').then(function (response) {
             React.renderComponent(
                 <RapperList data={JSON.parse(response.entity)} listName="Ukens beste rapper"/>,
                 document.getElementById('weekRappers'));

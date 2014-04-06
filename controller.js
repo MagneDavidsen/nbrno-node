@@ -10,9 +10,9 @@ var fiveMinutes = 60 * 10;
 
 var dbCache = new NodeCache({ stdTTL: fiveMinutes, checkperiod: fiveMinutes });
 
-function setScoreAndSort(rappers) {
+function setScoreAndSort(rappers, minVotes) {
     var rappersResponse = rappers.map(function (rapper) {
-        var winPercentage = (rapper.totalWins + rapper.totalLosses) > 1 ? rapper.totalWins / (rapper.totalWins + rapper.totalLosses) : 0;
+        var winPercentage = (rapper.totalWins + rapper.totalLosses) > minVotes ? rapper.totalWins / (rapper.totalWins + rapper.totalLosses) : 0;
         return {name: rapper.name, score: winPercentage}
     });
 
@@ -45,7 +45,7 @@ function getAllRappers(req, res) {
         models.Rapper.find().select('name totalWins totalLosses -_id').exec(function (err, rappers) {
             if (err) return console.error(err);
             console.timeEnd("db.getAllRappers");
-            rappersResponse = setScoreAndSort(rappers);
+            rappersResponse = setScoreAndSort(rappers, 100);
 
             dbCache.set("allRappers", rappersResponse, function (err, success) {
                 if (err) return console.error(err);
@@ -80,7 +80,7 @@ function getAllRappersDay(req, res) {
             var rappers = utils.copyLossesFromArray(winnerResult, loserResult);
             console.timeEnd("copyLosses");
 
-            var scoreRappers = setScoreAndSort(rappers);
+            var scoreRappers = setScoreAndSort(rappers,1 );
 
             dbCache.set("dayRappers", scoreRappers, function (err, success) {
                 if (err) return console.error(err);
@@ -136,7 +136,7 @@ function getAllRappersWeek(req, res) {
             var rappers = utils.copyLossesFromArray(winnerResult, loserResult);
             console.timeEnd("copyLosses");
 
-            var scoreRappers = setScoreAndSort(rappers);
+            var scoreRappers = setScoreAndSort(rappers, 1);
 
             dbCache.set("weekRappers", scoreRappers, function (err, success) {
                 if (err) return console.error(err);
