@@ -6,7 +6,7 @@ var parallel = require('when/parallel');
 var when = require('when');
 var NodeCache = require("node-cache");
 
-var fiveMinutes = 60 * 10;
+var fiveMinutes = 60 * 5;
 
 var dbCache = new NodeCache({ stdTTL: fiveMinutes, checkperiod: fiveMinutes });
 
@@ -24,11 +24,11 @@ function setScoreAndSort(rappers, minVotes) {
         return {name: rapper.name}
     });
 
-    return rappersResponse;
+    return withoutscore;
 }
 
 function returnRapperListResponse(res, rappers) {
-    res.send(200, rappers.slice(0, 10));
+    res.send(200, rappers.slice(0, 50));
 }
 
 function getAllRappers(req, res) {
