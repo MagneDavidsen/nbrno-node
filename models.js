@@ -13,6 +13,7 @@ var voteSchema = new Schema({
 var rapperSchema = new Schema({
   name: { type: String },
   picture: { data: String, contentType: String, fileName: String },
+  minibio: {type: String },
   totalWins: {type: Number, default: 0},
   totalLosses: {type: Number, default: 0}
 })
