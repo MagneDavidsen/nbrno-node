@@ -72,16 +72,16 @@ require(["rest/rest", "rest/interceptor/mime", "rest/interceptor/errorCode", "re
                 document.getElementById('allRappers'));
         });
 
+        rest('/api/Rappers/month').then(function (response) {
+            React.renderComponent(
+                <RapperList data={JSON.parse(response.entity)} listName="Månedens beste rapper"/>,
+                document.getElementById('dayRappers'));
+        });
+
         rest('/api/Rappers/week').then(function (response) {
             React.renderComponent(
                 <RapperList data={JSON.parse(response.entity)} listName="Ukens beste rapper"/>,
                 document.getElementById('weekRappers'));
-        });
-
-        rest('/api/Rappers/day').then(function (response) {
-            React.renderComponent(
-                <RapperList data={JSON.parse(response.entity)} listName="Dagens beste rapper"/>,
-                document.getElementById('dayRappers'));
         });
     }
 
@@ -273,4 +273,3 @@ require(["rest/rest", "rest/interceptor/mime", "rest/interceptor/errorCode", "re
     });
     resetListView();
 });
-

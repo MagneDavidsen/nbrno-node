@@ -56,22 +56,26 @@ function getAllRappers(req, res) {
     }
 }
 
-function getAllRappersDay(req, res) {
-    var today = new Date();
-    today.setHours(0,0,0,0);
+function getAllRappersMonth(req, res) {
 
-    var dayRappers;
+    function getThirtyDaysBack() {
+      var d = new Date();
+      d.setDate(d.getDate() - 30);
+      return d;
+    }
 
-    dbCache.get("dayRappers", function (err, value) {
+    var monthRappers;
+
+    dbCache.get("monthRappers", function (err, value) {
         if (err) return console.error(err);
-        dayRappers = value["dayRappers"];
+        monthRappers = value["monthRappers"];
     });
 
-    if (dayRappers) {
-        returnRapperListResponse(res, dayRappers);
+    if (monthRappers) {
+        returnRapperListResponse(res, monthRappers);
     } else {
         function handleWinnersAndLosers(response) {
-            console.timeEnd("db.getAllRappersForDay");
+            console.timeEnd("db.getAllRappersForMonth");
 
             var loserResult = response[0];
             var winnerResult = response[1];
@@ -82,21 +86,21 @@ function getAllRappersDay(req, res) {
 
             var scoreRappers = setScoreAndSort(rappers,1 );
 
-            dbCache.set("dayRappers", scoreRappers, function (err, success) {
+            dbCache.set("monthRappers", scoreRappers, function (err, success) {
                 if (err) return console.error(err);
             });
 
             returnRapperListResponse(res, scoreRappers);
         }
 
-        console.time("db.getAllRappersForDay");
+        console.time("db.getAllRappersForMonth");
         var winnerPromise = models.Vote.aggregate([
-            {$match: {'timestamp': {$gte: today}}},
+            {$match: {'timestamp': {$gte: getThirtyDaysBack()}}},
             {$group: {'_id': '$winner', 'name': {$first: '$winnerName'}, 'totalWins': {$sum: 1}}}
         ]).exec();
 
         var loserPromise = models.Vote.aggregate([
-            {$match: {'timestamp': {$gte: today}}},
+            {$match: {'timestamp': {$gte: getThirtyDaysBack()}}},
             {$group: {'_id': '$loser', 'name': {$first: '$loserName'}, 'totalLosses': {$sum: 1}}}
         ]).exec();
 
@@ -107,13 +111,10 @@ function getAllRappersDay(req, res) {
 }
 
 function getAllRappersWeek(req, res) {
-    function getMonday() {
-        var d = new Date();
-        var day = d.getDay();
-        var diff = d.getDate() - day + (day == 0 ? -6 : 1); // adjust when day is sunday
-        var monday = new Date(d.setDate(diff));
-        monday.setHours(0,0,0,0);
-        return monday;
+    function getSevenDaysBack() {
+      var d = new Date();
+      d.setDate(d.getDate() - 7);
+      return d;
     }
 
     var weekRappers;
@@ -147,12 +148,12 @@ function getAllRappersWeek(req, res) {
 
         console.time("db.getAllRappersForWeek");
         var winnerPromise = models.Vote.aggregate([
-            {$match: {'timestamp': {$gte: getMonday()}}},
+            {$match: {'timestamp': {$gte: getSevenDaysBack()}}},
             {$group: {'_id': '$winner', 'name': {$first: '$winnerName'}, 'totalWins': {$sum: 1}}}
         ]).exec();
 
         var loserPromise = models.Vote.aggregate([
-            {$match: {'timestamp': {$gte: getMonday()}}},
+            {$match: {'timestamp': {$gte: getSevenDaysBack()}}},
             {$group: {'_id': '$loser', 'name': {$first: '$loserName'}, 'totalLosses': {$sum: 1}}}
         ]).exec();
 
@@ -270,7 +271,7 @@ function vote(req, res) {
 module.exports = {
     getAllRappers: getAllRappers,
     getAllRappersWeek: getAllRappersWeek,
-    getAllRappersDay: getAllRappersDay,
+    getAllRappersMonth: getAllRappersMonth,
     getTwoRandomRappers: getTwoRandomRappers,
     vote: vote
 };
