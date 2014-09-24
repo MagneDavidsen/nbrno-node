@@ -1,41 +1,12 @@
-var gulp = require('gulp');
-var bower = require('gulp-bower');
-var react = require('gulp-react');
-var less = require('gulp-less');
-var path = require('path');
-var runSequence = require('run-sequence');
+/*
+	gulpfile.js
+	===========
+	Rather than manage one giant configuration file responsible
+	for creating multiple tasks, each task has been broken out into
+	its own file in gulp/tasks. Any file in that folder gets automatically
+	required by the loop in ./gulp/index.js (required below).
 
-gulp.task('bower', function() {
-  return bower()
-    .pipe(gulp.dest('client/src/js/lib/'));
+	To add a new task, simply add a new task file to gulp/tasks.
+*/
 
-});
-
-gulp.task('react', function () {
-    gulp.src('client/src/**/*.jsx')
-        .pipe(react())
-        .pipe(gulp.dest('dist/'));
-});
-
-gulp.task('copy-client', function () {
-    gulp.src(['client/src/**/index.html', 'client/src/**/*.js', 'client/src/**/*.jpg', 'client/src/**/*.png', 'client/src/**/*.ico'])
-        .pipe(gulp.dest('dist/'));
-});
-
-gulp.task('less', function () {
-  gulp.src('client/src/**/*.less')
-    .pipe(less({
-      paths: [ path.join(__dirname, 'less', 'includes') ]
-    }))
-    .pipe(gulp.dest('dist/'));
-});
-
-gulp.task('default', function(){
-  // place code for your default task here
-});
-
-gulp.task('heroku:production', function(){
-	runSequence(
-		'bower','react', 'copy-client', 'less'
-	);
-});
+require('./gulp');

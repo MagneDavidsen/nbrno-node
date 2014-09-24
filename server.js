@@ -13,7 +13,7 @@ var app = express();
 var port = process.env.PORT || 8080;
 var env = process.env.NODE_ENV;
 
-var dist = env === 'production' ? 'dist' : 'client/src';
+var dist = env === 'production' ? 'dist' : 'src';
 
 app.configure(function(){
   app.use(express.logger('dev'));

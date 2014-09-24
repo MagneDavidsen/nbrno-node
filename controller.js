@@ -2,8 +2,7 @@ var db = require('./db');
 var models = require('./models');
 var utils = require('./utils');
 var util = require('util');
-var parallel = require('when/parallel');
-var when = require('when');
+var Q = require('q');
 var NodeCache = require("node-cache");
 
 var fiveMinutes = 60 * 5;
@@ -104,7 +103,7 @@ function getAllRappersMonth(req, res) {
             {$group: {'_id': '$loser', 'name': {$first: '$loserName'}, 'totalLosses': {$sum: 1}}}
         ]).exec();
 
-        var newpromise = when.all([loserPromise, winnerPromise]);
+        var newpromise = Q.all([loserPromise, winnerPromise]);
 
         newpromise.then(handleWinnersAndLosers);
     }
@@ -157,7 +156,7 @@ function getAllRappersWeek(req, res) {
             {$group: {'_id': '$loser', 'name': {$first: '$loserName'}, 'totalLosses': {$sum: 1}}}
         ]).exec();
 
-        var newpromise = when.all([loserPromise, winnerPromise]);
+        var newpromise = Q.all([loserPromise, winnerPromise]);
 
         newpromise.then(handleWinnersAndLosers);
     }
