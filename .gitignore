@@ -15,4 +15,5 @@ npm-debug.log
 node_modules
 bower_components
 dist
-client/src/js/lib
+src/js/lib
+.env
