@@ -12,6 +12,8 @@
       "dependencies": {
         "express": "3.4.x",
         "mongoose": "3.8.x",
+        "browserify": "~3.36.0",
+        "browserify-shim": "3.x",
         "gulp": "3.5.6",
         "gulp-react": "^0.2.0",
         "gulp-less": "1.2.3",
