@@ -1,3 +1,3 @@
 var gulp = require('gulp');
 
-gulp.task('build', ['browserify', 'copy', 'less']);
+gulp.task('heroku:production', ['browserify', 'copy', 'less']);
