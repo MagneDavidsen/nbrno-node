@@ -171,8 +171,15 @@ var RapperBox = React.createClass({
         rapperBox.setState({voted: true});
 
         //sendVote
-        client = rest.chain(mime, { mime: 'application/json' }).chain(errorCode);
-        var votePromise = client({ method: 'POST', path: "/api/Vote", entity: {side: rapperSide}});
+        var votePromise = Q($.ajax({
+          type: "POST",
+          url: "/api/Vote",
+          contentType: "application/json; charset=utf-8",
+          dataType: "json",
+          entity: {side: rapperSide}
+        }));
+        //client = rest.chain(mime, { mime: 'application/json' }).chain(errorCode);
+        //var votePromise = client({ method: 'POST', path: "/api/Vote", entity: {side: rapperSide}});
 
         // //voteReturns
         votePromise.then(function (response) {

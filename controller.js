@@ -12,15 +12,15 @@ var dbCache = new NodeCache({ stdTTL: fiveMinutes, checkperiod: fiveMinutes });
 function setScoreAndSort(rappers, minVotes) {
     var rappersResponse = rappers.map(function (rapper) {
         var winPercentage = (rapper.totalWins + rapper.totalLosses) > minVotes ? rapper.totalWins / (rapper.totalWins + rapper.totalLosses) : 0;
-        return {name: rapper.name, score: winPercentage}
+        return {name: rapper.name, score: winPercentage};
     });
 
     rappersResponse.sort(function (a, b) {
-        return a.score - b.score
+        return a.score - b.score;
     }).reverse();
 
     var withoutscore = rappersResponse.map(function (rapper){
-        return {name: rapper.name}
+        return {name: rapper.name};
     });
 
     return withoutscore;
