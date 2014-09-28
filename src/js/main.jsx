@@ -175,11 +175,8 @@ var RapperBox = React.createClass({
           type: "POST",
           url: "/api/Vote",
           contentType: "application/json; charset=utf-8",
-          dataType: "json",
-          entity: {side: rapperSide}
+          data: JSON.stringify({side: rapperSide})
         }));
-        //client = rest.chain(mime, { mime: 'application/json' }).chain(errorCode);
-        //var votePromise = client({ method: 'POST', path: "/api/Vote", entity: {side: rapperSide}});
 
         // //voteReturns
         votePromise.then(function (response) {
