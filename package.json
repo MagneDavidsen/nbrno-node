@@ -4,39 +4,39 @@
     "start": "server.js",
     "watch": "gulp watch",
     "build": "gulp build"
-    },
-    "version": "0.0.1",
-    "engines": {
-      "node": "0.10.x"
-      },
-      "dependencies": {
-        "express": "3.4.x",
-        "mongoose": "3.8.x",
-        "browserify": "~3.36.0",
-        "browserify-shim": "3.x",
-        "reactify": "0.13.x",
-        "gulp": "3.7.0",
-        "gulp-notify": "~1.2.4",
-        "gulp-react": "^0.2.0",
-        "gulp-less": "1.2.3",
-        "gulp-uglify": "1.0.1",
-        "vinyl-buffer": "1.0.0",
-        "run-sequence": "0.3.6",
-        "vinyl-source-stream": "~0.1.1",
-        "gulp-livereload": "~1.2.0",
-        "path": "0.4.9",
-        "rest": "1.0.3",
-        "newrelic": "1.4.0",
-        "node-cache": "0.4.1",
-        "cloudinary": "1.0.8",
-        "q": "1.0.1",
-        "q-io": "1.11.5",
-        "react": "0.10.x",
-        "jquery": "2.1.1"
-      },
-      "browserify": {
-        "transform": [
-          "reactify"
-        ]
-      }
+  },
+  "version": "0.0.1",
+  "engines": {
+    "node": "0.10.x"
+  },
+  "dependencies": {
+    "browserify": "~3.36.0",
+    "browserify-shim": "3.x",
+    "cloudinary": "1.0.8",
+    "express": "3.4.x",
+    "gulp": "3.7.0",
+    "gulp-less": "1.2.3",
+    "gulp-livereload": "~1.2.0",
+    "gulp-notify": "~1.2.4",
+    "gulp-react": "^0.2.0",
+    "gulp-uglify": "1.0.1",
+    "jquery": "2.1.1",
+    "mongoose": "^3.8.37",
+    "newrelic": "1.4.0",
+    "node-cache": "0.4.1",
+    "path": "0.4.9",
+    "q": "1.0.1",
+    "q-io": "1.11.5",
+    "react": "0.10.x",
+    "reactify": "0.13.x",
+    "rest": "1.0.3",
+    "run-sequence": "0.3.6",
+    "vinyl-buffer": "1.0.0",
+    "vinyl-source-stream": "~0.1.1"
+  },
+  "browserify": {
+    "transform": [
+      "reactify"
+    ]
+  }
 }
