@@ -21,7 +21,7 @@
     "gulp-react": "^0.2.0",
     "gulp-uglify": "1.0.1",
     "jquery": "2.1.1",
-    "mongoose": "^3.8.37",
+    "mongoose": "4.2.10",
     "newrelic": "1.4.0",
     "node-cache": "0.4.1",
     "path": "0.4.9",
